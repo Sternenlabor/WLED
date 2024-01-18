@@ -181,6 +181,10 @@
   #include "../usermods/Internal_Temperature_v2/usermod_internal_temperature.h"
 #endif
 
+#ifdef USERMOD_WORDCLOCK_24
+  #include "../usermods/usermod_v2_word_clock24/usermod_v2_word_clock24.h"
+#endif
+
 #if defined(WLED_USE_SD_MMC) || defined(WLED_USE_SD_SPI)
 // This include of SD.h and SD_MMC.h must happen here, else they won't be
 // resolved correctly (when included in mod's header only)
@@ -323,6 +327,10 @@ void registerUsermods()
 
   #ifdef USERMOD_WORDCLOCK
   usermods.add(new WordClockUsermod());
+  #endif
+
+  #ifdef USERMOD_WORDCLOCK_24
+  usermods.add(new WordClock24Usermod());
   #endif
 
   #ifdef USERMOD_MY9291
