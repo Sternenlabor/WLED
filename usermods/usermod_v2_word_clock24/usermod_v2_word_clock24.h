@@ -223,7 +223,7 @@ class WordClock24Usermod: public Usermod
 
      // Wiring for Franken
     const uint8_t maskHoursFranken[25][maskSizeHoursDia] = 
-    { {  65, 64, 63, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF }, // 01: ein
+    { {  65, 64, 63, 62, 61, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF }, // 01: einse ... ein wird nicht benötigt, da keion "UHR" vorhanden
       {  65, 64, 63, 62, 61, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF }, // 01: einse
       {  5, 6, 7, 8, 9, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF }, // 02: zweie
       {  22, 23, 24, 25, 26, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF }, // 03: dreie
