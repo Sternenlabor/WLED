@@ -116,7 +116,7 @@ class WordClock24Usermod: public Usermod
     #define F_ETZAD_HAMMAS 111, 112, 113, 114, 115, F_HAMMAS // 11
     #define F_ETZAD_ISSES 111, 112, 113, 114, 115, 105, 106, 107, 108, 109 // 10
     #define F_KURZ_NACH 99, 100, 101, 102, 88, 89, 90, 91 // 8
-    #define F_UM 79, 80 // 2
+    #define F_UM 78, 79 // 2
 
     const uint8_t maskMinutesFranken[12][maskSizeMinutesDia] =
     { {  F_ETZAD_HAMMAS, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF}, // :00 Etzad hammas 
@@ -743,6 +743,11 @@ class WordClock24Usermod: public Usermod
           {
             // set pixel off
             strip.setPixelColor(x, RGBW32(0,0,0,0));
+            
+            // experimental way to dimm pixel by 75% instead of setting them to off
+            // strip.setPixelColor(x, RGBW32(R(strip.getPixelColor(x))/4,G(strip.getPixelColor(x))/4,B(strip.getPixelColor(x))/4,W(strip.getPixelColor(x))/4));
+ 
+
           }
         }
       }
