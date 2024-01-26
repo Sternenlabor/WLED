@@ -1,0 +1,54 @@
+{
+   "apperance": {
+      "desc": "The apperance section is only used for simulation.",
+      "size": {
+         "x": 4,
+         "y": 4
+      },
+      "watchface": [
+         "FEDC",
+         "89AB",
+         "7654",
+         "0123"
+      ],
+      "svg": "normal.svg"
+   },
+   "config": {
+      "hours": [
+         {
+            "h": 0,
+            "leds": []
+         }
+      ],
+      "min5step": [
+         {
+            "mStep": 0,
+            "hOffset": 0,
+            "leds": []
+         },
+         {
+            "mStep": 5,
+            "hOffset": 0,
+            "leds": []
+         }
+      ],
+      "residMin": [
+         {
+            "min": 1,
+            "leds": []
+         },
+         {
+            "min": 2,
+            "leds": []
+         },
+         {
+            "min": 3,
+            "leds": []
+         },
+         {
+            "min": 4,
+            "leds": []
+         }
+      ]
+   }
+}
