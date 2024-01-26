@@ -3,6 +3,7 @@
 #include "input_device.h"
 #include "cloud_event.h"
 #include <U8x8lib.h>
+#include "wled.h"
 
 using namespace std::placeholders;
 
@@ -205,7 +206,8 @@ public:
   UsermodCloudHmi() : Usermod(),
                       Observer(),
                       m_iCounter(0),
-                      m_sm()
+                      m_sm(),
+                      m_ulLastTime(0)
   {
   }
 
@@ -234,6 +236,54 @@ public:
     {
       m_arrDev[i]->loop();
     }
+
+    if (millis() - m_ulLastTime > 5000)
+    {
+      DEBUG_PRINTLN("Update CloudHMI");
+      readPresets();
+      // remember last update
+      m_ulLastTime = millis();
+    }
+  }
+
+  bool readPresets()
+  {
+    bool bRetval = false;
+    if (requestJSONBufferLock(9))
+    {
+      File hdlFile = WLED_FS.open("/presets.json", "r");
+      if (hdlFile)
+      {
+        DeserializationError err = deserializeJson(doc, hdlFile);
+        if (!err)
+        {
+          DEBUG_PRINTLN("Preset read sucessfully.");
+          // iterate over all keys - preset IDs
+          JsonObject jsRoot = doc.as<JsonObject>();
+          for (JsonPair kv : jsRoot)
+          {
+            if (doc[kv.key()].containsKey("n"))
+            {
+              DEBUG_PRINT(kv.key().c_str());
+              DEBUG_PRINT(":");
+              //doc[kv.key()]["n"].as<const char*>();
+              DEBUG_PRINTLN(doc[kv.key()]["n"].as<String>());
+            }
+            // Serial.println(kv.key().c_str());
+            // Serial.println(kv.value().as<const char *>());
+          }
+          // serializeJsonPretty(doc, Serial);
+          bRetval = true;
+        }
+        else
+        {
+          DEBUG_PRINTLN("ERROR: Failed to read preset file.");
+        }
+      }
+    }
+
+    releaseJSONBufferLock();
+    return bRetval;
   }
 
   /**
@@ -274,4 +324,5 @@ private:
 
   int32_t m_iCounter;
   SmCloud m_sm;
+  uint64_t m_ulLastTime;
 };
