@@ -4,6 +4,7 @@
 #include "cloud_event.h"
 #include <U8x8lib.h>
 #include "wled.h"
+#include <vector>
 
 using namespace std::placeholders;
 
@@ -25,6 +26,12 @@ enum eEVENT_SOURCE_IDS
   ID_DEVICE_LAST,
   ID_SM_MAIN = ID_DEVICE_LAST,
   ID_EVENT_SOURCE_LAST
+};
+
+struct stcPreset
+{
+  uint8_t m_uiId;
+  String m_StrName;
 };
 
 typedef std::function<void(uint8_t, uint8_t)> funcSm_t;
@@ -90,7 +97,8 @@ public:
   SmCloud() : StateMachine(ID_SM_MAIN, STATE_LAST),
               m_display(U8X8_PIN_NONE, OLDE_PIN_SCL, OLED_PIN_SDA),
               m_uiBrightness(0),
-              m_uiEffect(FX_MODE_STATIC)
+              m_uiEffect(FX_MODE_STATIC),
+              m_vecPresets()
   {
   }
 
@@ -108,6 +116,53 @@ public:
     SetInitialState(STATE_OFF);
   }
 
+  bool UpdatePresets()
+  {
+    bool bRetval = false;
+    if (requestJSONBufferLock(9))
+    {
+      File hdlFile = WLED_FS.open("/presets.json", "r");
+      if (hdlFile)
+      {
+        DeserializationError err = deserializeJson(doc, hdlFile);
+        if (!err)
+        {
+          m_vecPresets.clear();
+          // iterate over all keys - preset IDs
+          JsonObject jsRoot = doc.as<JsonObject>();
+          for (JsonPair kv : jsRoot)
+          {
+            if (doc[kv.key()].containsKey("n"))
+            {
+              uint8_t uiIdx;
+              uiIdx = strtoul(kv.key().c_str(), nullptr, 10);
+              m_vecPresets.push_back(stcPreset{uiIdx, doc[kv.key()]["n"].as<String>()});
+              DEBUG_PRINT(kv.key().c_str());
+              DEBUG_PRINT(":");
+              // doc[kv.key()]["n"].as<const char*>();
+              DEBUG_PRINTLN(doc[kv.key()]["n"].as<String>());
+            }
+            // Serial.println(kv.key().c_str());
+            // Serial.println(kv.value().as<const char *>());
+          }
+          // serializeJsonPretty(doc, Serial);
+          bRetval = true;
+        }
+        else
+        {
+          DEBUG_PRINTLN("ERROR: Failed to read preset file.");
+        }
+      }
+    }
+
+    // applyPreset(g_vecPresetMap[uiSelected], CALL_MODE_BUTTON);
+
+    releaseJSONBufferLock();
+    DEBUG_PRINT("Updated num. presets:");
+    DEBUG_PRINTLN(m_vecPresets.size());
+    return bRetval;
+  }
+
 private:
   void StOff(uint8_t uiSrc, uint8_t uiType)
   {
@@ -121,6 +176,7 @@ private:
       m_display.drawString(0, 2, m_cstrTmp);
       bri = m_uiBrightness;
       colorUpdated(CALL_MODE_NO_NOTIFY);
+      UpdatePresets();
     }
     else if (uiSrc == ID_BUT_ON_OFF && uiType == EVT_INP_PRESSED)
     {
@@ -196,6 +252,9 @@ private:
   char m_cstrTmp[80];
   uint8_t m_uiBrightness;
   uint8_t m_uiEffect;
+
+public:
+  std::vector<stcPreset> m_vecPresets;
 };
 
 class UsermodCloudHmi : public Usermod,
@@ -239,51 +298,18 @@ public:
 
     if (millis() - m_ulLastTime > 5000)
     {
-      DEBUG_PRINTLN("Update CloudHMI");
-      readPresets();
+      m_sm.UpdatePresets();
+      for(const auto& el : m_sm.m_vecPresets)
+      {
+        DEBUG_PRINT("Preset: ");
+        DEBUG_PRINT(el.m_uiId);
+        DEBUG_PRINT(":");
+        DEBUG_PRINTLN(el.m_StrName);
+      }
+
       // remember last update
       m_ulLastTime = millis();
     }
-  }
-
-  bool readPresets()
-  {
-    bool bRetval = false;
-    if (requestJSONBufferLock(9))
-    {
-      File hdlFile = WLED_FS.open("/presets.json", "r");
-      if (hdlFile)
-      {
-        DeserializationError err = deserializeJson(doc, hdlFile);
-        if (!err)
-        {
-          DEBUG_PRINTLN("Preset read sucessfully.");
-          // iterate over all keys - preset IDs
-          JsonObject jsRoot = doc.as<JsonObject>();
-          for (JsonPair kv : jsRoot)
-          {
-            if (doc[kv.key()].containsKey("n"))
-            {
-              DEBUG_PRINT(kv.key().c_str());
-              DEBUG_PRINT(":");
-              //doc[kv.key()]["n"].as<const char*>();
-              DEBUG_PRINTLN(doc[kv.key()]["n"].as<String>());
-            }
-            // Serial.println(kv.key().c_str());
-            // Serial.println(kv.value().as<const char *>());
-          }
-          // serializeJsonPretty(doc, Serial);
-          bRetval = true;
-        }
-        else
-        {
-          DEBUG_PRINTLN("ERROR: Failed to read preset file.");
-        }
-      }
-    }
-
-    releaseJSONBufferLock();
-    return bRetval;
   }
 
   /**
