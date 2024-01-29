@@ -15,6 +15,9 @@ const char cstrCONFIG_CHMI_STDBY_EFFECT[] PROGMEM = "StdbyEffect";
 #define OLDE_PIN_SCL 22
 #define OLED_PIN_SDA 21
 
+#define iOLED_BRI_ON 10
+#define iOLED_BRI_OFF 1
+
 enum eEVENT_SOURCE_IDS
 {
   ID_DEVICE_FIRST,
@@ -97,7 +100,7 @@ public:
   SmCloud() : StateMachine(ID_SM_MAIN, STATE_LAST),
               m_display(U8X8_PIN_NONE, OLDE_PIN_SCL, OLED_PIN_SDA),
               m_uiBrightness(0),
-              m_uiEffect(FX_MODE_STATIC),
+              m_uiLastPreset(0),
               m_vecPresets()
   {
   }
@@ -114,6 +117,14 @@ public:
     AddState(STATE_OFF, std::bind(&SmCloud::StOff, this, _1, _2));
     AddState(STATE_ON, std::bind(&SmCloud::StOn, this, _1, _2));
     SetInitialState(STATE_OFF);
+  }
+
+  void ApplyCurrentPreset()
+  {
+    if (m_vecPresets.size() > m_uiLastPreset)
+    {
+      applyPreset(m_vecPresets[m_uiLastPreset].m_uiId, CALL_MODE_BUTTON);
+    }
   }
 
   bool UpdatePresets()
@@ -154,12 +165,13 @@ public:
         }
       }
     }
-
-    // applyPreset(g_vecPresetMap[uiSelected], CALL_MODE_BUTTON);
-
     releaseJSONBufferLock();
     DEBUG_PRINT("Updated num. presets:");
     DEBUG_PRINTLN(m_vecPresets.size());
+    if (m_vecPresets.empty())
+    {
+      m_uiLastPreset = 0;
+    }
     return bRetval;
   }
 
@@ -168,15 +180,20 @@ private:
   {
     if (uiType == EVT_STATE_ENTRY)
     {
+      m_display.setPowerSave(1);
+      UpdatePresets();
       m_uiBrightness = 0;
       m_display.drawString(0, 0, "Off    ");
       sprintf(m_cstrTmp, "Br: %4d", m_uiBrightness);
       m_display.drawString(0, 1, m_cstrTmp);
-      sprintf(m_cstrTmp, "Ef: %4d", m_uiEffect);
+      if (m_vecPresets.size() > m_uiLastPreset)
+      {
+        sprintf(m_cstrTmp, "%10s", m_vecPresets[m_uiLastPreset].m_StrName.c_str());
+      }
       m_display.drawString(0, 2, m_cstrTmp);
       bri = m_uiBrightness;
-      colorUpdated(CALL_MODE_NO_NOTIFY);
-      UpdatePresets();
+            colorUpdated(CALL_MODE_BUTTON);
+      m_display.setContrast(iOLED_BRI_OFF);
     }
     else if (uiSrc == ID_BUT_ON_OFF && uiType == EVT_INP_PRESSED)
     {
@@ -186,17 +203,23 @@ private:
 
   void StOn(uint8_t uiSrc, uint8_t uiType)
   {
-    Segment &seg = strip.getSegment(0);
+    // Segment &seg = strip.getSegment(0);
     if (uiType == EVT_STATE_ENTRY)
     {
+      m_display.setPowerSave(0);
+      m_display.setContrast(iOLED_BRI_ON);
       m_uiBrightness = 20;
       m_display.drawString(0, 0, "On     ");
       sprintf(m_cstrTmp, "Br: %4d", m_uiBrightness);
       m_display.drawString(0, 1, m_cstrTmp);
-      sprintf(m_cstrTmp, "Ef: %4d", m_uiEffect);
+      if (m_vecPresets.size() > m_uiLastPreset)
+      {
+        sprintf(m_cstrTmp, "%10s", m_vecPresets[m_uiLastPreset].m_StrName.c_str());
+      }
       m_display.drawString(0, 2, m_cstrTmp);
+      ApplyCurrentPreset();
       bri = m_uiBrightness;
-      colorUpdated(CALL_MODE_NO_NOTIFY);
+      colorUpdated(CALL_MODE_BUTTON);
     }
     else if (uiSrc == ID_ROTARY_BRIGHTNESS || uiSrc == ID_BUT_ON_OFF)
     {
@@ -210,7 +233,7 @@ private:
         sprintf(m_cstrTmp, "Br: %4d", m_uiBrightness);
         m_display.drawString(0, 1, m_cstrTmp);
         bri = m_uiBrightness;
-        colorUpdated(CALL_MODE_NO_NOTIFY);
+        colorUpdated(CALL_MODE_BUTTON);
       }
       else if (uiType == EVT_INP_DECREMENT)
       {
@@ -218,40 +241,59 @@ private:
         sprintf(m_cstrTmp, "Br: %4d", m_uiBrightness);
         m_display.drawString(0, 1, m_cstrTmp);
         bri = m_uiBrightness;
-        colorUpdated(CALL_MODE_NO_NOTIFY);
+        colorUpdated(CALL_MODE_BUTTON);
       }
     }
     else if (uiSrc == ID_ROTARY_EFFECT || uiSrc == ID_BUT_EFFECT)
     {
       if (uiType == EVT_INP_INCREMENT)
       {
-        m_uiEffect++;
-        if (m_uiEffect > FX_MODE_DYNAMIC_SMOOTH)
+        if (!m_vecPresets.empty())
         {
-          m_uiEffect = FX_MODE_STATIC;
+          m_uiLastPreset++;
+          if (m_uiLastPreset >= m_vecPresets.size())
+          {
+            m_uiLastPreset = 0;
+          }
         }
-        sprintf(m_cstrTmp, "Ef: %4d", m_uiEffect);
-        m_display.drawString(0, 2, m_cstrTmp);
-        seg.mode = m_uiEffect;
+        else
+        {
+          m_uiLastPreset = 0;
+        }
       }
       else if (uiType == EVT_INP_DECREMENT)
       {
-        m_uiEffect--;
-        if (m_uiEffect > FX_MODE_DYNAMIC_SMOOTH)
+        if (!m_vecPresets.empty())
         {
-          m_uiEffect = FX_MODE_DYNAMIC_SMOOTH;
+          if (m_uiLastPreset == 0)
+          {
+            m_uiLastPreset = m_vecPresets.size() - 1;
+          }
+          else
+          {
+            m_uiLastPreset--;
+          }
         }
-        sprintf(m_cstrTmp, "Ef: %4d", m_uiEffect);
-        m_display.drawString(0, 2, m_cstrTmp);
-        seg.mode = m_uiEffect;
+        else
+        {
+          m_uiLastPreset = 0;
+        }
       }
+      if (m_vecPresets.size() > m_uiLastPreset)
+      {
+        sprintf(m_cstrTmp, "%10s", m_vecPresets[m_uiLastPreset].m_StrName.c_str());
+      }
+      m_display.drawString(0, 2, m_cstrTmp);
+      ApplyCurrentPreset();
+      bri = m_uiBrightness;
+      colorUpdated(CALL_MODE_BUTTON);
     }
   }
 
   U8X8_SSD1306_128X64_NONAME_HW_I2C m_display;
   char m_cstrTmp[80];
   uint8_t m_uiBrightness;
-  uint8_t m_uiEffect;
+  uint8_t m_uiLastPreset;
 
 public:
   std::vector<stcPreset> m_vecPresets;
@@ -298,15 +340,6 @@ public:
 
     if (millis() - m_ulLastTime > 5000)
     {
-      m_sm.UpdatePresets();
-      for(const auto& el : m_sm.m_vecPresets)
-      {
-        DEBUG_PRINT("Preset: ");
-        DEBUG_PRINT(el.m_uiId);
-        DEBUG_PRINT(":");
-        DEBUG_PRINTLN(el.m_StrName);
-      }
-
       // remember last update
       m_ulLastTime = millis();
     }
