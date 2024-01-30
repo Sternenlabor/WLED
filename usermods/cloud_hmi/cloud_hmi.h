@@ -187,11 +187,9 @@ private:
          m_display.drawString(0, 0, "Off    ");
          sprintf(m_cstrTmp, "Br: %4d", m_uiBrightness);
          m_display.drawString(0, 1, m_cstrTmp);
-         if (m_vecPresets.size() > m_uiLastPreset)
-         {
-            sprintf(m_cstrTmp, "%10s", m_vecPresets[m_uiLastPreset].m_StrName.c_str());
-         }
-         m_display.drawString(0, 2, m_cstrTmp);
+         GetPresetName(m_uiLastPreset, m_cstrTmp);
+         m_display.clearLine(2);
+         m_display.drawString(1, 2, m_cstrTmp);
          bri = m_uiBrightness;
          colorUpdated(CALL_MODE_BUTTON);
          m_display.setContrast(iOLED_BRI_OFF);
@@ -213,11 +211,9 @@ private:
          m_display.drawString(0, 0, "On     ");
          sprintf(m_cstrTmp, "Br: %4d", m_uiBrightness);
          m_display.drawString(0, 1, m_cstrTmp);
-         if (m_vecPresets.size() > m_uiLastPreset)
-         {
-            sprintf(m_cstrTmp, "%10s", m_vecPresets[m_uiLastPreset].m_StrName.c_str());
-         }
-         m_display.drawString(0, 2, m_cstrTmp);
+         GetPresetName(m_uiLastPreset, m_cstrTmp);
+         m_display.clearLine(2);
+         m_display.drawString(1, 2, m_cstrTmp);
          ApplyCurrentPreset();
          bri = m_uiBrightness;
          colorUpdated(CALL_MODE_BUTTON);
@@ -230,7 +226,7 @@ private:
          }
          else if (uiType == EVT_INP_INCREMENT)
          {
-            m_uiBrightness += 5;
+            IncDecBrigthness(m_uiBrightness, true);
             sprintf(m_cstrTmp, "Br: %4d", m_uiBrightness);
             m_display.drawString(0, 1, m_cstrTmp);
             bri = m_uiBrightness;
@@ -238,7 +234,7 @@ private:
          }
          else if (uiType == EVT_INP_DECREMENT)
          {
-            m_uiBrightness -= 5;
+            IncDecBrigthness(m_uiBrightness, false);
             sprintf(m_cstrTmp, "Br: %4d", m_uiBrightness);
             m_display.drawString(0, 1, m_cstrTmp);
             bri = m_uiBrightness;
@@ -280,14 +276,62 @@ private:
                m_uiLastPreset = 0;
             }
          }
-         if (m_vecPresets.size() > m_uiLastPreset)
-         {
-            sprintf(m_cstrTmp, "%10s", m_vecPresets[m_uiLastPreset].m_StrName.c_str());
-         }
-         m_display.drawString(0, 2, m_cstrTmp);
+         GetPresetName(m_uiLastPreset, m_cstrTmp);
+         m_display.clearLine(2);
+         m_display.drawString(1, 2, m_cstrTmp);
          ApplyCurrentPreset();
          bri = m_uiBrightness;
          colorUpdated(CALL_MODE_BUTTON);
+      }
+   }
+
+   void GetPresetName(uint8_t uiPreset, char *o_cstrName)
+   {
+      if (m_vecPresets.size() > uiPreset)
+      {
+         sprintf(o_cstrName, "%s", m_vecPresets[uiPreset].m_StrName.c_str());
+      }
+      else
+      {
+         sprintf(o_cstrName, "INVALID");
+      }
+   }
+
+   void IncDecBrigthness(uint8_t &io_uiCurrBri, bool bIncrease)
+   {
+      uint8_t uiStepSize;
+      if (io_uiCurrBri > 100)
+         uiStepSize = 25;
+      else if (io_uiCurrBri > 50)
+         uiStepSize = 15;
+      else if (io_uiCurrBri > 25)
+         uiStepSize = 10;
+      else if (io_uiCurrBri > 10)
+         uiStepSize = 5;
+      else
+         uiStepSize = 1;
+
+      if (bIncrease)
+      {
+         if (io_uiCurrBri + uiStepSize >= 255)
+         {
+            io_uiCurrBri = 255;
+         }
+         else
+         {
+            io_uiCurrBri += uiStepSize;
+         }
+      }
+      else
+      {
+         if (uiStepSize >= io_uiCurrBri)
+         {
+            io_uiCurrBri = 1;
+         }
+         else
+         {
+            io_uiCurrBri -= uiStepSize;
+         }
       }
    }
 
