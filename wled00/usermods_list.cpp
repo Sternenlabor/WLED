@@ -181,6 +181,10 @@
   #include "../usermods/Internal_Temperature_v2/usermod_internal_temperature.h"
 #endif
 
+#ifdef USERMOD_LILYGO
+  #include "../usermods/lilygo/usermod_lilygo.h"
+#endif
+
 #if defined(WLED_USE_SD_MMC) || defined(WLED_USE_SD_SPI)
 // This include of SD.h and SD_MMC.h must happen here, else they won't be
 // resolved correctly (when included in mod's header only)
@@ -379,5 +383,9 @@ void registerUsermods()
 
   #ifdef USERMOD_LDR_DUSK_DAWN
   usermods.add(new LDR_Dusk_Dawn_v2());
+  #endif
+
+  #ifdef USERMOD_LILYGO
+  usermods.add(new LilyGoUsermod());
   #endif
 }
