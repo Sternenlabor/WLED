@@ -119,8 +119,8 @@ class WordClock24Usermod: public Usermod
     #define F_UM 78, 79 // 2
 
     const uint8_t maskMinutesFranken[12][maskSizeMinutesDia] =
-    { {  F_ETZAD_HAMMAS, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF}, // :00 Etzad hammas 
-      {  F_ETZAD_ISSES, F_KURZ_NACH, F_UM, OFF, OFF, OFF, OFF, OFF, OFF, OFF, }, // :05 fünf nach / Etzad isses kurz nach um
+    { {  F_ETZAD_HAMMAS, F_UM, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF}, // :00 Etzad hammas um
+      {  F_ETZAD_ISSES, F_KURZ_NACH, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, }, // :05 fünf nach / Etzad isses kurz nach
       {  F_GLEI_HAMMAS, F_FERDL, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF }, // :10 zehn nach / glei hammas ferdl
       {  F_ETZAD_ISSES, F_FERDL, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF }, // :15 viertel / etzad isses ferdl
       {  F_ETZAD_ISSES, F_KURZ_NACH, F_FERDL, OFF, OFF, OFF, OFF}, // :20 zehn vor halb / etzad isses kurz nach ferdl
