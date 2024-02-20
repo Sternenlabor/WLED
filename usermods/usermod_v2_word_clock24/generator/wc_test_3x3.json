@@ -1,10 +1,6 @@
 {
    "apperance": {
       "desc": "The apperance section is only used for simulation.",
-      "size": {
-         "x": 4,
-         "y": 4
-      },
       "watchface": [
          "678",
          "543",

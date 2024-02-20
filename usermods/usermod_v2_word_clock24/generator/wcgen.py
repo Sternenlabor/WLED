@@ -2,6 +2,7 @@ from nicegui import ui
 import json
 import pathlib
 
+arrButtons = []
 
 def LoadWordClockJson(strFileName):
    dictWorcClockConfig = None
@@ -9,8 +10,6 @@ def LoadWordClockJson(strFileName):
        dictWorcClockConfig = json.load(f)
    return dictWorcClockConfig
    
-
-
 
 def CreateMeanderMap(arrWatchface):
    # create idx array
@@ -20,8 +19,7 @@ def CreateMeanderMap(arrWatchface):
    for x in range(iSize):
       arrIdx.append([i for i in range(iStart,iSize+iStart)])
       iStart += iSize
-   print(arrIdx)
-
+   
    tmpWc = []
    print("0. Orig: ",arrIdx)
    # 1. reverse even rows (0,2,4)
@@ -43,13 +41,18 @@ def CreateMeanderMap(arrWatchface):
    print("3. Step: ", arrFlat)
    return arrFlat
 
-
+def ToggleButton(idx, button: ui.button):
+   print(dir(button))
+   print("Style:", button.default_classes)
+   print("Props:", button.default_props)
+   pass
 
 def main():
-
    confiWc = LoadWordClockJson("wc_test_4x4.json")
    arrOrig = confiWc["apperance"]["watchface"]
    arrMap = CreateMeanderMap(arrOrig)
+
+   
    
    print("Create html")
    ## show watch face in web frontend
@@ -57,8 +60,12 @@ def main():
       iIdx = 0
       for row in arrOrig:
          for letter in row:
-            ui.label(letter).tooltip(str(arrMap[iIdx]))
+            arrButtons.extend(ui.button(letter, on_click=lambda e, idButton=arrMap[iIdx]: ToggleButton(idButton, e.sender)).tooltip(str(arrMap[iIdx])))
+            #arrButtons.extend(ui.button(letter, color="red", on_click=lambda idButton=arrMap[iIdx]: ToggleButton(idButton)).tooltip(str(arrMap[iIdx])))
+            
             iIdx += 1
+           
+   print(arrButtons)
 
    ui.run()
 
