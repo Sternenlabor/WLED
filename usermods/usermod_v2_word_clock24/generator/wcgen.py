@@ -2,44 +2,68 @@ from nicegui import ui
 import json
 import pathlib
 
-confiWc = None
-with open(str(pathlib.Path(__file__).parent.resolve()) + '/wc_test.json') as f:
-    confiWc = json.load(f)
+
+def LoadWordClockJson(strFileName):
+   dictWorcClockConfig = None
+   with open(str(pathlib.Path(__file__).parent.resolve()) + "/" + strFileName) as f:
+       dictWorcClockConfig = json.load(f)
+   return dictWorcClockConfig
+   
 
 
-iSizeX = confiWc["apperance"]["size"]["x"]
-iSizeY = confiWc["apperance"]["size"]["y"]
 
-## add letters to watch face array
-arrWatchface = []
-# start at last row - first LED is in the left bottom corner
-for idxRow in range(len(confiWc["apperance"]["watchface"])-1 , -1, -1):
-   strRow = confiWc["apperance"]["watchface"][idxRow]
-   # inervt string on each even number
-   if idxRow % 2 != 0:
-      strRow = strRow[::-1]
-   for charWc in strRow:
-      arrWatchface.extend(charWc)
+def CreateMeanderMap(arrWatchface):
+   # create idx array
+   arrIdx = []
+   iSize = len(arrWatchface)
+   iStart = 0
+   for x in range(iSize):
+      arrIdx.append([i for i in range(iStart,iSize+iStart)])
+      iStart += iSize
+   print(arrIdx)
 
-print(arrWatchface)
+   tmpWc = []
+   print("0. Orig: ",arrIdx)
+   # 1. reverse even rows (0,2,4)
+   iIdx = 0
+   for row in arrIdx:
+      if (iIdx % 2) != 0:
+         row = row[::-1]
+      tmpWc.append(row)
+      iIdx += 1
+   print("1. Step: ", tmpWc)
+   # 2. reverse rows last = first / first = last
+   tmpWc = tmpWc[::-1]
+   print("2. Step: ", tmpWc)
+   # 3. flatten
+   arrFlat = []
+   for row in tmpWc:
+      for letter in row:
+         arrFlat.append(letter)
+   print("3. Step: ", arrFlat)
+   return arrFlat
 
-print("Print html")
-## show watch face in web frontend
-with ui.grid(columns=iSizeX):
-   arrWatchFaceInverted = arrWatchface[::-1]
-   for iRow in range(0, iSizeY):
-      rngRow = range(iRow * iSizeX, iRow * iSizeX + iSizeX)
-      iSubPos = 0
-      if iRow % 2 == 0:
-         for el in arrWatchFaceInverted[iRow * iSizeX :iRow * iSizeX + iSizeX][::-1]:
-            ui.label(el).tooltip(str(rngRow[iSubPos]) + " even")
-            iSubPos += 1
 
-      else:         
-         print(range(iRow * iSizeX, iRow * iSizeX + iSizeX))
-         for el in arrWatchFaceInverted[iRow * iSizeX:iRow * iSizeX + iSizeX]:
-            ui.label(el).tooltip(str(rngRow[iSubPos]) + " odd")
-            iSubPos += 1
-         
 
-ui.run()
+def main():
+
+   confiWc = LoadWordClockJson("wc_test_4x4.json")
+   arrOrig = confiWc["apperance"]["watchface"]
+   arrMap = CreateMeanderMap(arrOrig)
+   
+   print("Create html")
+   ## show watch face in web frontend
+   with ui.grid(columns=len(arrOrig[0])):
+      iIdx = 0
+      for row in arrOrig:
+         for letter in row:
+            ui.label(letter).tooltip(str(arrMap[iIdx]))
+            iIdx += 1
+
+   ui.run()
+
+
+if __name__ in {"__main__", "__mp_main__"}:
+   main()
+
+
