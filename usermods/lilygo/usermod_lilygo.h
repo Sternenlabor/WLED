@@ -15,7 +15,6 @@ static lv_disp_buf_t disp_buf;
 lv_anim_t a;
 static lv_color_t buf[LV_HOR_RES_MAX * 10];
 
-lv_obj_t *slider_label;
 int screenWidth = TFT_HEIGHT;
 int screenHeight = TFT_WIDTH;
 
@@ -31,8 +30,8 @@ void ThreadGui(void *parameter)
    }
 }
 
-void my_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area,
-                   lv_color_t *color_p)
+void CbFlushDisplay(lv_disp_drv_t *disp, const lv_area_t *area,
+                    lv_color_t *color_p)
 {
    uint32_t w = (area->x2 - area->x1 + 1);
    uint32_t h = (area->y2 - area->y1 + 1);
@@ -45,7 +44,7 @@ void my_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area,
    lv_disp_flush_ready(disp);
 }
 
-bool my_touchpad_read(lv_indev_drv_t *indev_driver, lv_indev_data_t *data)
+bool CbReadTouch(lv_indev_drv_t *indev_driver, lv_indev_data_t *data)
 {
    if (touch.read())
    {
@@ -91,40 +90,7 @@ bool my_touchpad_read(lv_indev_drv_t *indev_driver, lv_indev_data_t *data)
    return false;
 }
 
-void printEvent(String Event, lv_event_t event)
-{
-   DEBUG_PRINT(Event);
-   DEBUG_PRINTLN(" ");
-
-   switch (event)
-   {
-   case LV_EVENT_PRESSED:
-      DEBUG_PRINTLN("Pressed\n");
-      break;
-
-   case LV_EVENT_SHORT_CLICKED:
-      DEBUG_PRINTLN("Short clicked\n");
-      break;
-
-   case LV_EVENT_CLICKED:
-      DEBUG_PRINTLN("Clicked\n");
-      break;
-
-   case LV_EVENT_LONG_PRESSED:
-      DEBUG_PRINTLN("Long press\n");
-      break;
-
-   case LV_EVENT_LONG_PRESSED_REPEAT:
-      DEBUG_PRINTLN("Long press repeat\n");
-      break;
-
-   case LV_EVENT_RELEASED:
-      DEBUG_PRINTLN("Released\n");
-      break;
-   }
-}
-
-static void event_handler(lv_obj_t *obj, lv_event_t event)
+static void CbRollerChanged(lv_obj_t *obj, lv_event_t event)
 {
    uint16_t uiSelected;
    if (event == LV_EVENT_VALUE_CHANGED)
@@ -156,10 +122,6 @@ private:
    unsigned long lastTime = 0;
 
 public:
-   // LilyGoUsermod() :
-   // {}
-   // Functions called by WLED
-
    virtual void onStateChange(uint8_t mode) override
    {
    }
@@ -167,8 +129,10 @@ public:
    /*
     * setup() is called once at boot. WiFi is not yet connected at this point.
     * You can use it to initialize variables, sensors or similar.
+
     */
-   void setup()
+
+   void SetupGUI()
    {
       pinMode(PIN_POWER_ON, OUTPUT);
       pinMode(PIN_LCD_BL, OUTPUT);
@@ -194,14 +158,14 @@ public:
       lv_disp_drv_init(&disp_drv);
       disp_drv.hor_res = screenWidth;
       disp_drv.ver_res = screenHeight;
-      disp_drv.flush_cb = my_disp_flush;
+      disp_drv.flush_cb = CbFlushDisplay;
       disp_drv.buffer = &disp_buf;
       lv_disp_drv_register(&disp_drv);
 
       lv_indev_drv_t indev_drv;
       lv_indev_drv_init(&indev_drv);          /*Descriptor of a input device driver*/
       indev_drv.type = LV_INDEV_TYPE_POINTER; /*Touch pad is a pointer-like device*/
-      indev_drv.read_cb = my_touchpad_read;   /*Set your driver function*/
+      indev_drv.read_cb = CbReadTouch;        /*Set your driver function*/
       lv_indev_drv_register(&indev_drv);      /*Finally register the driver*/
 
       lv_obj_t *scr = lv_cont_create(NULL, NULL);
@@ -217,7 +181,7 @@ public:
       lv_obj_set_height(m_uiRollPreset, screenHeight - 40);
       lv_obj_align(m_uiRollPreset, NULL, LV_ALIGN_CENTER, 0, 0);
       // lv_obj_set_style_local_border_width(m_uiRollPreset, LV_ROLLER_PART_BG, LV_STATE_DEFAULT, 20);
-      lv_obj_set_event_cb(m_uiRollPreset, event_handler);
+      lv_obj_set_event_cb(m_uiRollPreset, CbRollerChanged);
 
       UiUpdatePresetRoller();
       UiUpdateSelectedPreset(currentPreset);
@@ -258,6 +222,14 @@ public:
       /* START THE ANIMATION
        *------------------*/
       lv_anim_start(&a);
+
+      // switch on BL after init
+      digitalWrite(PIN_LCD_BL, HIGH);
+   }
+
+   void setup()
+   {
+      SetupGUI();
 
       xTaskCreatePinnedToCore(
           ThreadGui, /* Function to implement the task */
@@ -333,63 +305,25 @@ public:
       }
    }
 
-   /*
-    * connected() is called every time the WiFi is (re)connected
-    * Use it to initialize network interfaces
-    */
-   void connected() {}
-
-   /*
-    * loop() is called continuously. Here you can check for events, read sensors,
-    * etc.
-    *
-    * Tips:
-    * 1. You can use "if (WLED_CONNECTED)" to check for a successful network
-    * connection. Additionally, "if (WLED_MQTT_CONNECTED)" is available to check
-    * for a connection to an MQTT broker.
-    *
-    * 2. Try to avoid using the delay() function. NEVER use delays longer than 10
-    * milliseconds. Instead, use a timer check as shown here.
-    */
    void loop()
    {
-
-      // switch on BL after init
-      digitalWrite(PIN_LCD_BL, HIGH);
-
       // do it every 5 seconds
-      if (millis() - lastTime > 5000)
+      if (millis() - lastTime > 300)
       {
          // UpdatePresets();
          lastTime = millis();
+         if (g_presetToApply != currentPreset)
+         {
+            UiUpdateSelectedPreset(currentPreset);
+            g_presetToApply = currentPreset;
+         }
+
          // DEBUG_PRINT("Usermod running on Core: ");
          // DEBUG_PRINTLN(xPortGetCoreID());
       }
    }
    lv_obj_t *m_uiRollPreset = nullptr;
-   lv_obj_t *m_uiBgObj = nullptr;
-
-   // void addToJsonState(JsonObject &root)
-   // {
-   // }
-
-   // void readFromJsonState(JsonObject &root)
-   // {
-   // }
-
-   // void addToConfig(JsonObject &root)
-   // {
-   // }
-
-   // bool readFromConfig(JsonObject &root)
-   // {
-
-   // }
-
-   // void handleOverlayDraw()
-   // {
-   //    // check if usermod is active
-   // }
+ 
 
    uint16_t getId() { return USERMOD_ID_LILYGO; }
 };
