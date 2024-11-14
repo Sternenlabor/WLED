@@ -308,7 +308,7 @@ public:
       dCFinterrupt = DCFinterrupt;
       pulseStart = OnRisingFlank ? HIGH : LOW;
 
-      pinMode(dCF77Pin, INPUT);
+      pinMode(dCF77Pin, INPUT_PULLUP);
       initialize();
    }
 
