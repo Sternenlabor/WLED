@@ -219,7 +219,6 @@ class WordClock24Usermod: public Usermod
     // mask minute dots
     const int maskMinuteDots[maskSizeMinuteDots] = { 70, 71, 72, 73 };
     const int maskMinuteDotsVogtland[maskSizeMinuteDots] = { 83, 82, 81, 80 };
-    const int maskMinuteDotsSwiss[maskSizeMinuteDots] = { 83, 82, 81, 80 };
 
     // overall mask to define which LEDs are on
     int maskLedsOn[maskSizeLeds] = 
@@ -341,10 +340,6 @@ class WordClock24Usermod: public Usermod
           {
           case eDIALECT::VOGTLAND:
             maskLedsOn[maskMinuteDotsVogtland[i]] = 1;
-            break;
-          
-          case eDIALECT::SWISS:
-            maskLedsOn[maskMinuteDotsSwiss[i]] = 1;  
             break;
 
           default:
