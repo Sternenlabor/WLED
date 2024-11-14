@@ -45,6 +45,7 @@ class WordClock24Usermod: public Usermod
     // defines for mask sizes
     #define maskSizeLeds        121 
     #define maskSizeMinutes     12
+    #define maskSizeMinutesDia  21
     #define maskSizeHours       14
     #define maskSizeHoursDia    15
     #define maskSizeItIs        9
@@ -77,15 +78,15 @@ class WordClock24Usermod: public Usermod
     #define V_ITZE_ISSES 110, 111, 112, 113, 116, 117,  118,  119, 120 // 9
     #define V_KURZ_NACH 101, 102, 103, 104, 88, 89, 90, 91 // 8
 
-    const uint8_t maskMinutesVogtland[12][21] =
-    { {  V_NU_HAMMERS, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF}, // :00 nu hammers
+    const uint8_t maskMinutesVogtland[12][maskSizeMinutesDia] =
+    { {  V_NU_HAMMERS, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF}, // :00 nu hammers
       {  V_ITZE_ISSES, V_KURZ_NACH, 77, 78, OFF,OFF}, // :05 fünf nach / kurz nach um
       {  V_GLEI_HAMMERS, V_VIERTEL, OFF,OFF,OFF,OFF}, // :10 zehn nach / glei hammers viertel
-      {  V_ITZE_ISSES, V_VIERTEL,   OFF, OFF,OFF,OFF,OFF,OFF }, // :15 viertel / itze isses viertel
+      {  V_ITZE_ISSES, V_VIERTEL, OFF, OFF,OFF,OFF,OFF,OFF }, // :15 viertel / itze isses viertel
       {  V_KURZ_NACH, V_VIERTEL, OFF,OFF,OFF,OFF,OFF,OFF,OFF }, // :20 zehn vor halb / kurz nach viertel
       {  V_GLEI_HAMMERS, V_HALB, OFF,OFF,OFF,OFF,OFF,OFF }, // :25 fünf vor halb / kurz vor halb
       {  V_ITZE_ISSES, V_HALB, OFF, OFF, OFF, OFF, OFF, OFF,OFF, OFF }, // :30 halb / itze isses halb
-      {  V_KURZ_NACH, V_HALB,  OFF,OFF,OFF,OFF,OFF,OFF,OFF,OFF,OFF}, // :35 fünf nach halb / kurz nach halb
+      {  V_ITZE_ISSES, V_KURZ_NACH, V_HALB}, // :35 fünf nach halb / itze isses kurz nach halb
       {  V_GLEI_HAMMERS, V_DREIVIERTEL }, // :40 zehn nach halb / glei hammers dreiviertel
       {  V_ITZE_ISSES, V_DREIVIERTEL, OFF, OFF }, // :45 dreiviertel
       {  V_KURZ_NACH, V_DREIVIERTEL,   OFF, OFF, OFF }, // :50 kurz nach dreiviertel
@@ -142,60 +143,60 @@ class WordClock24Usermod: public Usermod
 
     // Wiring for Vogtland
     const uint8_t maskHoursVogtland[25][maskSizeHoursDia] = 
-    { {  51,  52,  53,   OFF,   OFF,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 01: ein
-      {  51,  52,  53,  54,   OFF,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 01: eins
-      {  9,  8,  7,  6,   5,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 02: zwei
-      {  22,  23,  24,  25,   26,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 03: drei
-      {  11,  12,  13,  14,   15,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 04: vier
-      {  55,  56,  57,  58,   59,   60,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 05: fünf
-      {  49,  50,  51,  52,  53,   54,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 06: sechs
-      {  28,  29,  30,  31,  32,  OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 07: sieben
-      {  33,  34, 35,  36,   37,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 08: acht
-      {  44,  45,  46,  47,   48,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 09: neun
-      {  39,  40,  41,  42,   43,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 10: zehn
-      {  0,  1,  2,   3,   OFF,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 11: elf
-      {  16,   17,   18,   19,   20,   21,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 12: zwölf
-      {  51,  52,  53,  54,   OFF,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 01: eins
-      {  9,  8,  7,  6,   5,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 02: zwei
-      {  22,  23,  24,  25,   26,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 03: drei
-      {  11,  12,  13,  14,   15,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 04: vier
-      {  55,  56,  57,  58,   59,   60,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 05: fünf
-      {  49,  50,  51,  52,  53,   54,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 06: sechs
-      {  28,  29,  30,  31,  32,  OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 07: sieben
-      {  33,  34, 35,  36,   37,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 08: acht
-      {  44,  45,  46,  47,   48,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 09: neun
-      {  39,  40,  41,  42,   43,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 10: zehn
-      {  0,  1,  2,   3,   OFF,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 11: elf
-      {  16,   17,   18,   19,   20,   21,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 12: zwölf
+    { {  65,  64,  63,   62,   OFF,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF, OFF }, // 01: ein
+      {  65,  64,  63,  62,   61,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF , OFF}, // 01: eins
+      {  9,  8,  7,  6,   5,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF , OFF}, // 02: zwei
+      {  22,  23,  24,  25,   26,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF , OFF}, // 03: drei
+      {  11,  12,  13,  14,   15,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF , OFF}, // 04: vier
+      {  55,  56,  57,  58,   59,   60,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF , OFF}, // 05: fünf
+      {  49,  50,  51,  52,  53,   54,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF , OFF}, // 06: sechs
+      {  28,  29,  30,  31,  32,  OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF , OFF}, // 07: sieben
+      {  33,  34, 35,  36,   37,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF , OFF}, // 08: acht
+      {  44,  45,  46,  47,   48,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF , OFF}, // 09: neun
+      {  39,  40,  41,  42,   43,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF , OFF}, // 10: zehn
+      {  0,  1,  2,   3,   OFF,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF , OFF}, // 11: elf
+      {  16,   17,   18,   19,   20,   21,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF , OFF}, // 12: zwölf
+      {  65,  64,  63,  62,   61,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF , OFF}, // 01: eins
+      {  9,  8,  7,  6,   5,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF , OFF}, // 02: zwei
+      {  22,  23,  24,  25,   26,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF , OFF}, // 03: drei
+      {  11,  12,  13,  14,   15,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF , OFF}, // 04: vier
+      {  55,  56,  57,  58,   59,   60,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF , OFF}, // 05: fünf
+      {  49,  50,  51,  52,  53,   54,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF , OFF}, // 06: sechs
+      {  28,  29,  30,  31,  32,  OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF , OFF}, // 07: sieben
+      {  33,  34, 35,  36,   37,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF , OFF}, // 08: acht
+      {  44,  45,  46,  47,   48,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF , OFF}, // 09: neun
+      {  39,  40,  41,  42,   43,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF , OFF}, // 10: zehn
+      {  0,  1,  2,   3,   OFF,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF , OFF}, // 11: elf
+      {  16,   17,   18,   19,   20,   21,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF , OFF}, // 12: zwölf
     };
 
     // Wiring for swiss
     const uint8_t maskHoursSwiss[25][maskSizeHoursDia] = 
-    { {  65,  64,  63,  OFF,  OFF,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 01: ein !
-      {  65,  64,  63,  OFF,  OFF,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 01: eins !
-      {  62,  61,  60,  59,  OFF,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 02: zwei !
-      {  57,  56,  55,  OFF,  OFF,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 03: drei !
-      {  44,  45,  46,  47,  48,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 04: vier !
-      {  49,  50,  51,  52,  OFF,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 05: fünf !
-      {  43,  42,  41,  40,  39,  38,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 06: sechs !
-      {  37,  36,  35,  34,  33,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 07: sieben !
-      {  22,  23,  24,  25,  26,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 08: acht !
-      {  27,  28,  29,  30,  31,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 09: neun !
-      {  21,  20,  19,  18,  OFF,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 10: zehn !
-      {  14,  13,  12,  11,  OFF,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 11: elf !
-      {   0,   1,   2,   3,   4,   5,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 12: zwölf !
-      {  65,  64,  63,  OFF,  OFF,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 13: eins !
-      {  62,  61,  60,  59,  OFF,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 14: zwei !
-      {  57,  56,  55,  OFF,  OFF,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 15: drei !
-      {  44,  45,  46,  47,  48,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 16: vier !
-      {  49,  50,  51,  52,  OFF,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 17: fünf !
-      {  43,  42,  41,  40,  39,  38,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 18: sechs !
-      {  37,  36,  35,  34,  33,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 19: sieben !
-      {  22,  23,  24,  25,  26,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 20: acht !
-      {  27,  28,  29,  30,  31,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 21: neun !
-      {  21,  20,  19,  18,  OFF,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 22: zehn !
-      {  14,  13,  12,  11,  OFF,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 23: elf !
-      {   0,   1,   2,   3,   4,  5,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 24: zwölf Uhr Mitternacht 
+    { {  65,  64,  63,  OFF,  OFF,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF , OFF}, // 01: ein !
+      {  65,  64,  63,  OFF,  OFF,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF , OFF}, // 01: eins !
+      {  62,  61,  60,  59,  OFF,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF , OFF}, // 02: zwei !
+      {  57,  56,  55,  OFF,  OFF,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF , OFF}, // 03: drei !
+      {  44,  45,  46,  47,  48,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF , OFF}, // 04: vier !
+      {  49,  50,  51,  52,  OFF,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF , OFF}, // 05: fünf !
+      {  43,  42,  41,  40,  39,  38,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF , OFF}, // 06: sechs !
+      {  37,  36,  35,  34,  33,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF , OFF}, // 07: sieben !
+      {  22,  23,  24,  25,  26,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF , OFF}, // 08: acht !
+      {  27,  28,  29,  30,  31,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF , OFF}, // 09: neun !
+      {  21,  20,  19,  18,  OFF,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF , OFF}, // 10: zehn !
+      {  14,  13,  12,  11,  OFF,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF , OFF}, // 11: elf !
+      {   0,   1,   2,   3,   4,   5,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF , OFF}, // 12: zwölf !
+      {  65,  64,  63,  OFF,  OFF,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF , OFF}, // 13: eins !
+      {  62,  61,  60,  59,  OFF,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF , OFF}, // 14: zwei !
+      {  57,  56,  55,  OFF,  OFF,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF , OFF}, // 15: drei !
+      {  44,  45,  46,  47,  48,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF , OFF}, // 16: vier !
+      {  49,  50,  51,  52,  OFF,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF , OFF}, // 17: fünf !
+      {  43,  42,  41,  40,  39,  38,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF , OFF}, // 18: sechs !
+      {  37,  36,  35,  34,  33,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF , OFF}, // 19: sieben !
+      {  22,  23,  24,  25,  26,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF , OFF}, // 20: acht !
+      {  27,  28,  29,  30,  31,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF , OFF}, // 21: neun !
+      {  21,  20,  19,  18,  OFF,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF , OFF}, // 22: zehn !
+      {  14,  13,  12,  11,  OFF,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF , OFF}, // 23: elf !
+      {   0,   1,   2,   3,   4,  5,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF , OFF}, // 24: zwölf Uhr Mitternacht 
     };
  
     uint8_t maskItIs[maskSizeItIs]      = { 110, 111, 113, 114, 115,   OFF,   OFF,   OFF,  OFF};  // E S  I S T 
@@ -236,7 +237,7 @@ class WordClock24Usermod: public Usermod
       0,0,0,0,0,0,0,0,0,0,0,
       0,0,0,0,0,0,0,0,0,0,0,
       0,0,0,0,0,0,0,0,0,0,0,
-      0,0,0,0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,0,0,0
     };
 
     // update led mask
@@ -245,15 +246,18 @@ class WordClock24Usermod: public Usermod
       // loop over array
       for (int x=0; x < arraySize; x++) 
       {
+        maskLedsOn[x] = 0;
+      }
+      for (int x=0; x < arraySize; x++) 
+      {
+
         // check if mask has a valid LED number
-        if (wordMask[x] != OFF && wordMask[x] < maskSizeLeds)
+        if (wordMask[x] < maskSizeLeds)
         {
           // turn LED on
           maskLedsOn[wordMask[x]] = 1;
-        }
+        } 
       }
-      // Fix fucking first led on
-      // maskLedsOn[0] = 0;
     }
 
     // set hours
@@ -311,7 +315,7 @@ class WordClock24Usermod: public Usermod
        switch(m_eDialect)
       {
         case eDIALECT::VOGTLAND:
-          updateLedMask(maskMinutesVogtland[index], maskSizeMinutes);
+          updateLedMask(maskMinutesVogtland[index], maskSizeMinutesDia);
           break;
         
         case eDIALECT::SWISS:
@@ -361,7 +365,7 @@ class WordClock24Usermod: public Usermod
       for (int x = 0; x < maskSizeLeds; x++)
       {
         maskLedsOn[x] = 0; // 1: alle an; 0: alle aus
-      } 
+      }
       
       // display it is/es ist if activated
       if (displayItIs)
@@ -405,7 +409,15 @@ class WordClock24Usermod: public Usermod
         case 2:
             // 10 nach
             setMinutes(2);
-            setHours(hours, false,minutes);
+            
+            switch(m_eDialect)
+            {
+              case eDIALECT::VOGTLAND:
+                setHours(hours+1, false,minutes);
+                break;
+              default:
+                setHours(hours, false,minutes);
+            }
             break;
         case 3:
             // viertel nach
@@ -413,7 +425,7 @@ class WordClock24Usermod: public Usermod
             switch(m_eDialect)
             {
               case eDIALECT::VOGTLAND:
-                setHours(hours, false,minutes);
+                setHours(hours+1, false,minutes);
                 break;
 
               case eDIALECT::SWISS:
@@ -428,7 +440,7 @@ class WordClock24Usermod: public Usermod
             switch(m_eDialect)
             {
               case eDIALECT::VOGTLAND:
-                setHours(hours, false,minutes);
+                setHours(hours+1, false,minutes);
                 break;
 
               case eDIALECT::SWISS:
@@ -509,9 +521,9 @@ class WordClock24Usermod: public Usermod
       // do it every 5 seconds
       if (millis() - lastTime > 5000) 
       {
-         DEBUG_PRINTLN("Updating WordClock24");
-         DEBUG_PRINT("Dialect: ");
-         DEBUG_PRINTLN(m_eDialect);
+         //DEBUG_PRINTLN("Updating WordClock24");
+         //DEBUG_PRINT("Dialect: ");
+         //DEBUG_PRINTLN(m_eDialect);
         // check the time
         int minutes = minute(localTime);
 
