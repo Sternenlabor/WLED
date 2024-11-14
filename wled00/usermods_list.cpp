@@ -398,6 +398,8 @@ void registerUsermods()
 
   #ifdef USERMOD_STAIRCASE_WIPE
   usermods.add(new StairwayWipeUsermod());
+  #endif 
+  
   #ifdef USERMOD_DCF77
   usermods.add(new UsermodDcf77());
   #endif
