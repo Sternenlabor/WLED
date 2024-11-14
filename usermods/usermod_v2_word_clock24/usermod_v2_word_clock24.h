@@ -20,6 +20,15 @@ class WordClock24Usermod: public Usermod
   // Die Angabe UHR erscheint nicht bei Minute 0 sondern erst bei Minute 1.
   // "P" LED 0 (unten links) leuchtet im Meander-Modus 
 
+  enum eDIALECT
+  {
+    FIRST,
+    NONE = FIRST,
+    SAXONY,
+    SWISS,
+    LAST
+  };
+
   private:
     unsigned long lastTime = 0;
     int lastTimeMinutes =   -1;
@@ -27,12 +36,12 @@ class WordClock24Usermod: public Usermod
     // set your config variables to their boot default value (this can also be done in readFromConfig() or a constructor if you prefer)
     bool usermodActive = true;
     bool displayItIs = true; // ES IST ... UHR 
-    bool dialekt = false;
+    eDIALECT m_eDialect = eDIALECT::NONE;
+
     
     // defines for mask sizes
     #define maskSizeLeds        121 
     #define maskSizeMinutes     12
-    #define maskSizeMinutesDia  12
     #define maskSizeHours       14
     #define maskSizeHoursDia    15
     #define maskSizeItIs        8
@@ -55,8 +64,8 @@ class WordClock24Usermod: public Usermod
       {   74,  75,  76, 106, 107, 108, 109,  -1,  -1,  -1,  -1,  -1 }, // :55 fünf vor 
     };
 
-    // Meander wiring
-    const int maskMinutesDia[12][maskSizeMinutesDia] = 
+    // Meander wiring for saxyon
+    const int maskMinutesDialect[12][maskSizeMinutes] =
     { {  8,  9,  10,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1 }, // :00
       {  66,  67,  68,  69, 106, 107, 108, 109,  -1,  -1,  -1,  -1 }, // :05 fünf nach
       {  66,  67,  68,  69, 117, 118, 119, 120,  -1,  -1,  -1,  -1 }, // :10 zehn nach
@@ -102,7 +111,7 @@ class WordClock24Usermod: public Usermod
     };
 
     // Meander wiring
-    const int maskHoursDia[24][maskSizeHoursDia] = 
+    const int maskHoursSaxony[24][maskSizeHoursDia] = 
     { {  51,  52,  53,  -1,  -1,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 01: ein
       {  51,  52,  53,  54,  -1,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 01: eins
       {  44,  45,  46,  47,  -1,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 02: zwei
@@ -129,10 +138,36 @@ class WordClock24Usermod: public Usermod
       {  77,  78,  79,  80,  81,  82,  83,  84, 85, 86,  88,  89,  90,  91 }  // 23: dreiundzwanzig
     };
 
-    // mask "it is"
-    //const int maskItIs[maskSizeItIs] = {   8,   9,  10, 104, 105, 106, 108, 109};  // Paul: E S  I S T UHR
-  
-    public: int maskItIs[maskSizeItIs] = { 110, 111, 113, 114, 115, -1,  -1,  -1};  // E S  I S T
+    // Meander wiring hours
+    const int maskHoursSwiss[24][maskSizeHoursDia] = 
+    { {  51,  52,  53,  -1,  -1,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 01: ein ?
+      {  66,  65,  64,  -1,  -1,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 01: eins !
+      {  63,  62,  61,  60,  -1,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 02: zwei !
+      {  58,  57,  56,  -1,  -1,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 03: drei !
+      {  55,  54,  53,  52,  51,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 04: vier !
+      {  50,  49,  48,  47,  -1,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 05: fünf !
+      {  44,  43,  42,  41,  40,  39,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 06: sechs !
+      {  38,  37,  36,  35,  34,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 07: sieben !
+      {  23,  24,  25,  26,  27,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 08: acht !
+      {  28,  29,  30,  31,  32,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 09: neun !
+      {  22,  21,  20,  19,  18,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 10: zehn !
+      {  15,  14,  13,  12,  -1,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 11: elf !
+      {   1,   2,   3,   4,   5,  6,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 12: zwölf !
+      {  13,  14,  15,  16,  49,  50,  51,  52, -1, -1,  -1,  -1,  -1,  -1 }, // 13: dreizehn 
+      {  13,  14,  15,  16,  29,  30,  31,  32, -1, -1,  -1,  -1,  -1,  -1 }, // 14: vierzehn 
+      {  13,  14,  15,  16,  33,  34,  35,  36, -1, -1,  -1,  -1,  -1,  -1 }, // 15: fünfzehn 
+      {  13,  14,  15,  16,  43,  44,  45,  46, -1, -1,  -1,  -1,  -1,  -1 }, // 16: sechzehn 
+      {  13,  14,  15,  16,  71,  73,  74,  75, -1, -1,  -1,  -1,  -1,  -1 }, // 17: siebzehn
+      {  13,  14,  15,  16,  17,  18,  19,  20, -1, -1,  -1,  -1,  -1,  -1 }, // 18: achtzehn 
+      {  13,  14,  15,  16,  25,  26,  27,  28, -1, -1,  -1,  -1,  -1,  -1 }, // 19: neunzehn
+      {  77,  78,  79,  80,  81,  82,  83,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 20: zwanzig 
+      {  77,  78,  79,  80,  81,  82,  83,  84, 85, 86, 101, 102, 103,  -1 }, // 21: einundzwanzig
+      {  77,  78,  79,  80,  81,  82,  83,  84, 85, 86, 102, 103, 104, 105 }, // 22: zweiundzwanzig 
+      {  77,  78,  79,  80,  81,  82,  83,  84, 85, 86,  88,  89,  90,  91 }  // 23: dreiundzwanzig
+    };
+ 
+    int maskItIs[maskSizeItIs]      = { 110, 111, 113, 114, 115,  -1,  -1,  -1};  // E S  I S T 
+    int maskItIsSwiss[maskSizeItIs] = { 110, 111, 113, 114, 115, 116,  -1,  -1};  // E S  ISCH
 
     // UHR ein- / ausblenden
     void set_oClock (int minute) 
@@ -217,13 +252,19 @@ class WordClock24Usermod: public Usermod
       }
 
       // update led mask
-      if (dialekt)
+      switch(m_eDialect)
       {
-        updateLedMask(maskHoursDia[index], maskSizeHoursDia);
-      } 
-      else
-      {
-        updateLedMask(maskHours[index], maskSizeHours);
+        case eDIALECT::SAXONY:
+          updateLedMask(maskHoursSaxony[index], maskSizeHoursDia);
+          break;
+        
+        case eDIALECT::SWISS:
+          updateLedMask(maskHoursSwiss[index], maskSizeHoursDia);
+          break;
+        
+        default:
+          updateLedMask(maskHours[index], maskSizeHours);
+          break;
       }
     }
 
@@ -231,13 +272,17 @@ class WordClock24Usermod: public Usermod
     void setMinutes(int index)
     {
       // update led mask
-      if (dialekt)
+       switch(m_eDialect)
       {
-        updateLedMask(maskMinutesDia[index], maskSizeMinutesDia);
-      } else {
-      updateLedMask(maskMinutes[index], maskSizeMinutes);
+        case eDIALECT::SAXONY:
+        case eDIALECT::SWISS:
+          updateLedMask(maskMinutesDialect[index], maskSizeMinutes);
+          break;
+        
+        default:
+          updateLedMask(maskMinutes[index], maskSizeMinutes);
+          break;
       }
-
     }
 
     // set minutes dot
@@ -270,7 +315,17 @@ class WordClock24Usermod: public Usermod
       // display it is/es ist if activated
       if (displayItIs)
       {
-        updateLedMask(maskItIs, maskSizeItIs);
+        switch(m_eDialect)
+        {
+          case eDIALECT::SWISS:
+            updateLedMask(maskItIsSwiss, maskSizeItIs);
+            break;
+
+          case eDIALECT::SAXONY:
+          default:
+            updateLedMask(maskItIs, maskSizeItIs);
+            break;
+        }
       }
 
       // display UHR, if full hour
@@ -301,22 +356,31 @@ class WordClock24Usermod: public Usermod
         case 3:
             // viertel nach
             setMinutes(3);
-            if (dialekt){  // Added by KARSTEN
-            setHours(hours, false,minutes);
-            }
-            else{ // viertel
-              setHours(hours+1, false,minutes);
+            switch(m_eDialect)
+            {
+              case eDIALECT::SAXONY:
+              case eDIALECT::SWISS:
+                setHours(hours, false,minutes);
+                break;
+
+              default:
+                setHours(hours+1, false,minutes);
+                break;  
             }
             break;
         case 4:
             // 20 nach
             setMinutes(4);
-            if (dialekt){  // Added by KARSTEN
-            setHours(hours, false,minutes);
-            } 
-            // 10 vor halb
-            else{
-            setHours(hours+1, false,minutes);
+            switch(m_eDialect)
+            {
+              case eDIALECT::SAXONY:
+              case eDIALECT::SWISS:
+                setHours(hours, false,minutes);
+                break;
+
+              default:
+                setHours(hours+1, false,minutes);
+                break;  
             }
             break;
         case 5:
@@ -477,7 +541,7 @@ class WordClock24Usermod: public Usermod
       JsonObject top = root.createNestedObject("WordClock24Usermod");
       top["active"] = usermodActive;
       top["ES IST anzeigen"] = displayItIs;
-      top["ZWANZIG VOR ?"] = dialekt;
+      top["Dialect"] = m_eDialect;
     }
 
     /*
@@ -506,9 +570,14 @@ class WordClock24Usermod: public Usermod
 
       configComplete &= getJsonValue(top["active"], usermodActive);
       configComplete &= getJsonValue(top["ES IST anzeigen"], displayItIs);
-      configComplete &= getJsonValue(top["ZWANZIG VOR ?"], dialekt);
+      configComplete &= getJsonValue(top["Dialect"], m_eDialect);
 
       return configComplete;
+    }
+
+    virtual void appendConfigData() override
+    {
+      oappend(SET_F("addInfo('WordClock24Usermod:Dialect',1,'0=None,1=Saxony,2=Swiss');"));
     }
 
     /*
