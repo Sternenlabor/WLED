@@ -9,8 +9,8 @@
  * Usermods allow you to add own functionality to WLED more easily
  * See: https://github.com/Aircoookie/WLED/wiki/Add-own-functionality
  * 
- * This usermod can be used to drive a wordclock with a 11x10 pixel matrix with WLED. There are also 4 additional dots for the minutes. 
- * The visualisation is desribed in 4 mask with LED numbers (single dots for minutes, minutes, hours and "clock/Uhr").
+ * This usermod can be used to drive a wordclock with a 11x11 pixel matrix with WLED. There are also 4 additional dots for the minutes. 
+ * The visualisation is desrcibed in 4 mask with LED numbers (single dots for minutes, minutes, hours and "clock/Uhr").
  * There are 2 parameters to chnage the behaviour:
  * 
  * active: enable/disable usermod
@@ -18,10 +18,7 @@
  */
 
 class WordClock24Usermod: public Usermod 
-{ // 12.03.2023 ToDo: 
-  // Die Angabe UHR immmer nur zur vollen Stunde einblenden!
-  // Die Angabe UHR erscheint nicht bei Minute 0 sondern erst bei Minute 1.
-  // "P" LED 0 (unten links) leuchtet im Meander-Modus 
+{ 
 
   enum eDIALECT
   {
@@ -199,24 +196,23 @@ class WordClock24Usermod: public Usermod
       {   0,   1,   2,   3,   4,  5,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF , OFF}, // 24: zwölf Uhr Mitternacht 
     };
  
-    uint8_t maskItIs[maskSizeItIs]      = { 110, 111, 113, 114, 115,   OFF,   OFF,   OFF,  OFF};  // E S  I S T 
-    uint8_t maskItIsSwiss[maskSizeItIs] = { 110, 111, 113, 114, 115, 116,   OFF,   OFF,  OFF};  // E S  ISCH
-    //uint8_t maskItIsVogtland[maskSizeItIs] = { 110, 111, 112, 113, 116, 117,  118,  119, 120};  // ITZE ISSES
+    public: uint8_t maskItIs[maskSizeItIs]      = { 110, 111, 113, 114, 115,   8,  9,   10,  OFF};  // ES IST UHR
+    public: uint8_t maskItIsSwiss[maskSizeItIs] = { 110, 111, 113, 114, 115, 116,   OFF,   OFF,  OFF};  // ES ISCH
 
     // UHR ein- / ausblenden
-    void set_oClock (int minute) 
+    void set_oClock(uint8_t minute)
     { 
-     if (minute < 4) // Nick , funktioniert, klingt aber für uns nicht logisch (von 5 auf 4 geändert)
+     if (minute < 4)
       {
         maskItIs[5] =  8;  // U
         maskItIs[6] =  9;  // H
         maskItIs[7] = 10;  // R
       }
-     else
-      {  
-        maskItIs[5] =  OFF;
-        maskItIs[6] =  OFF;
-        maskItIs[7] =  OFF;
+      else
+      { 
+        maskItIs[5] = OFF;
+        maskItIs[6] = OFF;
+        maskItIs[7] = OFF;
       }
     }
 
@@ -224,6 +220,7 @@ class WordClock24Usermod: public Usermod
     const int maskMinuteDots[maskSizeMinuteDots] = { 70, 71, 72, 73 };
     const int maskMinuteDotsVogtland[maskSizeMinuteDots] = { 83, 82, 81, 80 };
     const int maskMinuteDotsSwiss[maskSizeMinuteDots] = { 83, 82, 81, 80 };
+
     // overall mask to define which LEDs are on
     int maskLedsOn[maskSizeLeds] = 
     {
@@ -285,7 +282,7 @@ class WordClock24Usermod: public Usermod
       // special handling for hours > 12, full text only when full hour
       // wenn Minute > 5 , dann gehe zwölf Stunden zurück
       if (hours > 12){
-        if (minute > 4 ) // geändert von > 5 (Nick)
+        if (minute > 4 )
         {
            index = hours - 12;
         };
@@ -343,7 +340,7 @@ class WordClock24Usermod: public Usermod
         switch(m_eDialect)
           {
           case eDIALECT::VOGTLAND:
-            maskLedsOn[maskMinuteDotsVogtland[i]] = 1;  
+            maskLedsOn[maskMinuteDotsVogtland[i]] = 1;
             break;
           
           case eDIALECT::SWISS:
@@ -372,10 +369,6 @@ class WordClock24Usermod: public Usermod
       {
         switch(m_eDialect)
         {
-          case eDIALECT::VOGTLAND:
-            //updateLedMask(maskItIsVogtland, maskSizeItIs);
-            break;
-
           case eDIALECT::SWISS:
             updateLedMask(maskItIsSwiss, maskSizeItIs);
             break;
@@ -387,7 +380,7 @@ class WordClock24Usermod: public Usermod
       }
 
       // display UHR, if full hour
-      // set_oClock(minute(localTime)); Nick 
+      // set_oClock(minute(localTime));
       set_oClock(minutes); 
       
       // set single minute dots
@@ -521,9 +514,9 @@ class WordClock24Usermod: public Usermod
       // do it every 5 seconds
       if (millis() - lastTime > 5000) 
       {
-         //DEBUG_PRINTLN("Updating WordClock24");
-         //DEBUG_PRINT("Dialect: ");
-         //DEBUG_PRINTLN(m_eDialect);
+        //DEBUG_PRINTLN("Updating WordClock24");
+        //DEBUG_PRINT("Dialect: ");
+        //DEBUG_PRINTLN(m_eDialect);
         // check the time
         int minutes = minute(localTime);
 
@@ -532,7 +525,6 @@ class WordClock24Usermod: public Usermod
         {
           // update the display with new time
           updateDisplay(hour(localTime), minute(localTime));
-          //updateDisplay(2, 9);
           // remember last update time
           lastTimeMinutes = minutes;
         }
