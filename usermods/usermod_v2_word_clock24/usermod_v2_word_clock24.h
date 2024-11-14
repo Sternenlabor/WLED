@@ -2,6 +2,9 @@
 
 #include "wled.h"
 
+
+#define OFF 255
+
 /*
  * Usermods allow you to add own functionality to WLED more easily
  * See: https://github.com/Aircoookie/WLED/wiki/Add-own-functionality
@@ -49,126 +52,143 @@ class WordClock24Usermod: public Usermod
 
     // "minute" masks
     // Normal wiring
-    const int maskMinutes[12][maskSizeMinutes] = 
-    { {   8,   9,   10,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1 }, // :00
-      {   66,  67,  68,  69, 106, 107, 108, 109,  -1,  -1,  -1,  -1 }, // :05 fünf nach
-      {   66,  67,  68,  69, 117, 118, 119, 120,  -1,  -1,  -1,  -1,}, // :10 zehn nach
-      {   92,  93,  94,  95,  96,  97,  98,  -1,  -1,  -1,  -1,  -1 }, // :15 viertel
-      {   62,  63,  64,  65,  74,  75,  76, 117, 118, 119, 120,  -1 }, // :20 zehn vor halb
-      {   62,  63,  64,  65,  74,  75,  76, 106, 107, 108, 109,  -1 }, // :25 fünf vor halb
-      {   62,  63,  64,  65,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1 }, // :30 halb
+    const uint8_t maskMinutes[12][maskSizeMinutes] = 
+    { {   8,   9,   10,  OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF }, // :00
+      {   66,  67,  68,  69, 106, 107, 108, 109,   OFF,   OFF,   OFF,   OFF }, // :05 fünf nach
+      {   66,  67,  68,  69, 117, 118, 119, 120,   OFF,   OFF,   OFF,   OFF,}, // :10 zehn nach
+      {   92,  93,  94,  95,  96,  97,  98,   OFF,   OFF,   OFF,   OFF,   OFF }, // :15 viertel
+      {   62,  63,  64,  65,  74,  75,  76, 117, 118, 119, 120,   OFF }, // :20 zehn vor halb
+      {   62,  63,  64,  65,  74,  75,  76, 106, 107, 108, 109,   OFF }, // :25 fünf vor halb
+      {   62,  63,  64,  65,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF }, // :30 halb
       {   62,  63,  64,  65,  66,  67,  68,  69, 106, 107, 108, 109 }, // :35 fünf nach halb
       {   62,  63,  64,  65,  66,  67,  68,  69, 117, 118, 119, 120 }, // :40 zehn nach halb
-      {   88,  89,  90,  91,  92,  93,  94,  95,  96,  97,  98,  -1 }, // :45 dreiviertel
-      {   74,  75,  76, 117, 118, 119, 120,  -1,  -1,  -1,  -1,  -1 }, // :50 zehn vor
-      {   74,  75,  76, 106, 107, 108, 109,  -1,  -1,  -1,  -1,  -1 }, // :55 fünf vor 
+      {   88,  89,  90,  91,  92,  93,  94,  95,  96,  97,  98,   OFF }, // :45 dreiviertel
+      {   74,  75,  76, 117, 118, 119, 120,   OFF,   OFF,   OFF,   OFF,   OFF }, // :50 zehn vor
+      {   74,  75,  76, 106, 107, 108, 109,   OFF,   OFF,   OFF,   OFF,   OFF }, // :55 fünf vor 
     };
 
-    // Meander wiring for saxyon
-    const int maskMinutesDialect[12][maskSizeMinutes] =
-    { {  8,  9,  10,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1 }, // :00
-      {  66,  67,  68,  69, 106, 107, 108, 109,  -1,  -1,  -1,  -1 }, // :05 fünf nach
-      {  66,  67,  68,  69, 117, 118, 119, 120,  -1,  -1,  -1,  -1 }, // :10 zehn nach
-      {  66,  67,  68,  69,  92,  93,  94,  95,  96,  97,  98,  -1 }, // :15 viertel nach   
-      {  66,  67,  68,  69,  77,  78,  79,  80,  81,  82,  83,  -1 }, // :20 zwanzig nach
-      {  62,  63,  64,  65,  74,  75,  76, 106, 107, 108, 109,  -1 }, // :25 fünf vor halb
-      {  62,  63,  64,  65,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1 }, // :30 halb
+    // Meander wiring for saxony
+    const uint8_t maskMinutesSaxony[12][maskSizeMinutes] =
+    { {  8,  9,  10,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF }, // :00
+      {  66,  67,  68,  69, 106, 107, 108, 109,   OFF,   OFF,   OFF,   OFF }, // :05 fünf nach
+      {  66,  67,  68,  69, 117, 118, 119, 120,   OFF,   OFF,   OFF,   OFF }, // :10 zehn nach
+      {  66,  67,  68,  69,  92,  93,  94,  95,  96,  97,  98,   OFF }, // :15 viertel nach   
+      {  66,  67,  68,  69,  77,  78,  79,  80,  81,  82,  83,   OFF }, // :20 zwanzig nach
+      {  62,  63,  64,  65,  74,  75,  76, 106, 107, 108, 109,   OFF }, // :25 fünf vor halb
+      {  62,  63,  64,  65,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF }, // :30 halb
       {  62,  63,  64,  65,  66,  67,  68,  69, 106, 107, 108, 109 }, // :35 fünf nach halb
-      {  74,  75,  76,  77,  78,  79,  80,  81,  82,  83,  -1,  -1 }, // :40 zwanzig vor
-      {  74,  75,  76,  92,  93,  94,  95,  96,  97,  98,  -1,  -1 }, // :45 viertel vor
-      {  74,  75,  76, 117, 118, 119, 120,  -1,  -1,  -1,  -1,  -1 }, // :50 zehn vor
-      {  74,  75,  76, 106, 107, 108, 109,  -1,  -1,  -1,  -1,  -1 }, // :55 fünf vor 
+      {  74,  75,  76,  77,  78,  79,  80,  81,  82,  83,   OFF,   OFF }, // :40 zwanzig vor
+      {  74,  75,  76,  92,  93,  94,  95,  96,  97,  98,   OFF,   OFF }, // :45 viertel vor
+      {  74,  75,  76, 117, 118, 119, 120,   OFF,   OFF,   OFF,   OFF,   OFF }, // :50 zehn vor
+      {  74,  75,  76, 106, 107, 108, 109,   OFF,   OFF,   OFF,   OFF,   OFF }, // :55 fünf vor 
+    };
+
+    // Meander wiring for swiss
+    const uint8_t maskMinutesSwiss[12][maskSizeMinutes] =
+    { {    OFF,    OFF,    OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF }, // :00
+      {   118,  119,  120,  87, 86,  OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // :05 fünf nach
+      {   101,  100,  99,  87, 86,  OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF,}, // :10 zehn nach
+      {   109,  108,  107,  106,  105,  104,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF }, // :15 viertel
+      {   101,  100,  99,  96,  97,  98,  84, 83, 82, 81, 80,   OFF }, // :20 zehn vor halb
+      {   118,  119,  120,  96,  97,  98,  84, 83, 82, 81, 80,   OFF }, // :25 fünf vor halb
+      {   84,  83,  82,  81,  80,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF }, // :30 halb
+      {   118,  119,  120,  87,  86,  84,  83,  82, 81, 80,  OFF,  OFF }, // :35 fünf nach halb
+      {   88,  89,  90,  91,  92,  93,  96,  97, 98, 66, 67,  OFF }, // :40 zehn nach halb / zwanzig vor um
+      {   109,  108,  107,  106,  105,  104,  96,  97,  98,  66,  67,   OFF }, // :45 dreiviertel / viertel vor um
+      {   101,  100,  99, 96, 97, 98, 66, 67,   OFF,   OFF,   OFF,   OFF }, // :50 zehn vor / zehn vor um
+      {   118,  119,  120, 96, 97, 98, 66, 67,   OFF,   OFF,   OFF,   OFF }, // :55 fünf vor / fünf vor um
     };
 
     // hour masks
     // Normal wiring
-    const int maskHours[25][maskSizeHours] = 
-    { {  51,  52,  53,  -1,  -1,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 01: ein
-      {  51,  52,  53,  54,  -1,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 01: eins
-      {  44,  45,  46,  47,  -1,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 02: zwei
-      {  49,  50,  51,  52,  -1,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 03: drei
-      {  29,  30,  31,  32,  -1,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 04: vier
-      {  33,  34,  35,  36,  -1,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 05: fünf
-      {  39,  40,  41,  42,  43,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 06: sechs
-      {  55,  56,  57,  58,  59,  60,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 07: sieben
-      {  17,  18,  19,  20,  -1,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 08: acht
-      {  25,  26,  27,  28,  -1,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 09: neun
-      {  13,  14,  15,  16,  -1,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 10: zehn
-      {  22,  23,  24,  -1,  -1,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 11: elf
-      {   1,   2,   3,   4,   5,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 12: zwölf 
-      {  13,  14,  15,  16,  49,  50,  51,  52, -1, -1,  -1,  -1,  -1,  -1 }, // 13: dreizehn 
-      {  13,  14,  15,  16,  29,  30,  31,  32, -1, -1,  -1,  -1,  -1,  -1 }, // 14: vierzehn
-      {  13,  14,  15,  16,  33,  34,  35,  36, -1, -1,  -1,  -1,  -1,  -1 }, // 15: fünfzehn
-      {  13,  14,  15,  16,  40,  41,  42,  43, -1, -1,  -1,  -1,  -1,  -1 }, // 16: sechzehn 
-      {  13,  14,  15,  16,  57,  58,  59,  60, -1, -1,  -1,  -1,  -1,  -1 }, // 17: siebzehn
-      {  13,  14,  15,  16,  17,  18,  19,  20, -1, -1,  -1,  -1,  -1,  -1 }, // 18: achtzehn 
-      {  13,  14,  15,  16,  25,  26,  27,  28, -1, -1,  -1,  -1,  -1,  -1 }, // 19: neunzehn
-      {  77,  78,  79,  80,  81,  82,  83,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 20: zwanzig 
-      {  77,  78,  79,  80,  81,  82,  83,  84, 85, 86, 101, 102, 103,  -1 }, // 21: einundzwanzig
+    const uint8_t maskHours[25][maskSizeHours] = 
+    { {  51,  52,  53,   OFF,   OFF,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 01: ein
+      {  51,  52,  53,  54,   OFF,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 01: eins
+      {  44,  45,  46,  47,   OFF,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 02: zwei
+      {  49,  50,  51,  52,   OFF,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 03: drei
+      {  29,  30,  31,  32,   OFF,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 04: vier
+      {  33,  34,  35,  36,   OFF,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 05: fünf
+      {  39,  40,  41,  42,  43,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 06: sechs
+      {  55,  56,  57,  58,  59,  60,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 07: sieben
+      {  17,  18,  19,  20,   OFF,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 08: acht
+      {  25,  26,  27,  28,   OFF,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 09: neun
+      {  13,  14,  15,  16,   OFF,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 10: zehn
+      {  22,  23,  24,   OFF,   OFF,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 11: elf
+      {   1,   2,   3,   4,   5,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 12: zwölf 
+      {  13,  14,  15,  16,  49,  50,  51,  52,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 13: dreizehn 
+      {  13,  14,  15,  16,  29,  30,  31,  32,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 14: vierzehn
+      {  13,  14,  15,  16,  33,  34,  35,  36,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 15: fünfzehn
+      {  13,  14,  15,  16,  40,  41,  42,  43,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 16: sechzehn 
+      {  13,  14,  15,  16,  57,  58,  59,  60,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 17: siebzehn
+      {  13,  14,  15,  16,  17,  18,  19,  20,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 18: achtzehn 
+      {  13,  14,  15,  16,  25,  26,  27,  28,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 19: neunzehn
+      {  77,  78,  79,  80,  81,  82,  83,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 20: zwanzig 
+      {  77,  78,  79,  80,  81,  82,  83,  84, 85, 86, 101, 102, 103,   OFF }, // 21: einundzwanzig
       {  77,  78,  79,  80,  81,  82,  83,  84, 85, 86, 102, 103, 104, 105 }, // 22: zweiundzwanzig 
       {  77,  78,  79,  80,  81,  82,  83,  84, 85, 86,  88,  89,  90,  91 }, // 23: dreiundzwanzig
-      {   1,   2,   3,   4,   5,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 24: zwölf Uhr Mitternacht
+      {   1,   2,   3,   4,   5,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 24: zwölf Uhr Mitternacht
     };
 
     // Meander wiring
-    const int maskHoursSaxony[24][maskSizeHoursDia] = 
-    { {  51,  52,  53,  -1,  -1,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 01: ein
-      {  51,  52,  53,  54,  -1,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 01: eins
-      {  44,  45,  46,  47,  -1,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 02: zwei
-      {  49,  50,  51,  52,  -1,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 03: drei
-      {  29,  30,  31,  32,  -1,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 04: vier
-      {  33,  34,  35,  36,  -1,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 05: fünf
-      {  39,  40,  41,  42,  43,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 06: sechs
-      {  55,  56,  57,  58,  59,  60,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 07: sieben
-      {  17,  18,  19,  20,  -1,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 08: acht
-      {  25,  26,  27,  28,  -1,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 09: neun
-      {  13,  14,  15,  16,  -1,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 10: zehn
-      {  22,  23,  24,  -1,  -1,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 11: elf
-      {   1,   2,   3,   4,   5,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 12: zwölf 
-      {  13,  14,  15,  16,  49,  50,  51,  52, -1, -1,  -1,  -1,  -1,  -1 }, // 13: dreizehn 
-      {  13,  14,  15,  16,  29,  30,  31,  32, -1, -1,  -1,  -1,  -1,  -1 }, // 14: vierzehn
-      {  13,  14,  15,  16,  33,  34,  35,  36, -1, -1,  -1,  -1,  -1,  -1 }, // 15: fünfzehn
-      {  13,  14,  15,  16,  43,  44,  45,  46, -1, -1,  -1,  -1,  -1,  -1 }, // 16: sechzehn 
-      {  13,  14,  15,  16,  71,  73,  74,  75, -1, -1,  -1,  -1,  -1,  -1 }, // 17: siebzehn
-      {  13,  14,  15,  16,  17,  18,  19,  20, -1, -1,  -1,  -1,  -1,  -1 }, // 18: achtzehn 
-      {  13,  14,  15,  16,  25,  26,  27,  28, -1, -1,  -1,  -1,  -1,  -1 }, // 19: neunzehn
-      {  77,  78,  79,  80,  81,  82,  83,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 20: zwanzig 
-      {  77,  78,  79,  80,  81,  82,  83,  84, 85, 86, 101, 102, 103,  -1 }, // 21: einundzwanzig
+    const uint8_t maskHoursSaxony[24][maskSizeHoursDia] = 
+    { {  51,  52,  53,   OFF,   OFF,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 01: ein
+      {  51,  52,  53,  54,   OFF,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 01: eins
+      {  44,  45,  46,  47,   OFF,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 02: zwei
+      {  49,  50,  51,  52,   OFF,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 03: drei
+      {  29,  30,  31,  32,   OFF,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 04: vier
+      {  33,  34,  35,  36,   OFF,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 05: fünf
+      {  39,  40,  41,  42,  43,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 06: sechs
+      {  55,  56,  57,  58,  59,  60,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 07: sieben
+      {  17,  18,  19,  20,   OFF,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 08: acht
+      {  25,  26,  27,  28,   OFF,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 09: neun
+      {  13,  14,  15,  16,   OFF,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 10: zehn
+      {  22,  23,  24,   OFF,   OFF,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 11: elf
+      {   1,   2,   3,   4,   5,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 12: zwölf 
+      {  13,  14,  15,  16,  49,  50,  51,  52,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 13: dreizehn 
+      {  13,  14,  15,  16,  29,  30,  31,  32,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 14: vierzehn
+      {  13,  14,  15,  16,  33,  34,  35,  36,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 15: fünfzehn
+      {  13,  14,  15,  16,  43,  44,  45,  46,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 16: sechzehn 
+      {  13,  14,  15,  16,  71,  73,  74,  75,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 17: siebzehn
+      {  13,  14,  15,  16,  17,  18,  19,  20,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 18: achtzehn 
+      {  13,  14,  15,  16,  25,  26,  27,  28,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 19: neunzehn
+      {  77,  78,  79,  80,  81,  82,  83,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 20: zwanzig 
+      {  77,  78,  79,  80,  81,  82,  83,  84, 85, 86, 101, 102, 103,   OFF }, // 21: einundzwanzig
       {  77,  78,  79,  80,  81,  82,  83,  84, 85, 86, 102, 103, 104, 105 }, // 22: zweiundzwanzig 
       {  77,  78,  79,  80,  81,  82,  83,  84, 85, 86,  88,  89,  90,  91 }  // 23: dreiundzwanzig
     };
 
     // Meander wiring hours
-    const int maskHoursSwiss[24][maskSizeHoursDia] = 
-    { {  51,  52,  53,  -1,  -1,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 01: ein ?
-      {  66,  65,  64,  -1,  -1,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 01: eins !
-      {  63,  62,  61,  60,  -1,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 02: zwei !
-      {  58,  57,  56,  -1,  -1,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 03: drei !
-      {  55,  54,  53,  52,  51,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 04: vier !
-      {  50,  49,  48,  47,  -1,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 05: fünf !
-      {  44,  43,  42,  41,  40,  39,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 06: sechs !
-      {  38,  37,  36,  35,  34,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 07: sieben !
-      {  23,  24,  25,  26,  27,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 08: acht !
-      {  28,  29,  30,  31,  32,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 09: neun !
-      {  22,  21,  20,  19,  18,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 10: zehn !
-      {  15,  14,  13,  12,  -1,  -1,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 11: elf !
-      {   1,   2,   3,   4,   5,  6,  -1,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 12: zwölf !
-      {  13,  14,  15,  16,  49,  50,  51,  52, -1, -1,  -1,  -1,  -1,  -1 }, // 13: dreizehn 
-      {  13,  14,  15,  16,  29,  30,  31,  32, -1, -1,  -1,  -1,  -1,  -1 }, // 14: vierzehn 
-      {  13,  14,  15,  16,  33,  34,  35,  36, -1, -1,  -1,  -1,  -1,  -1 }, // 15: fünfzehn 
-      {  13,  14,  15,  16,  43,  44,  45,  46, -1, -1,  -1,  -1,  -1,  -1 }, // 16: sechzehn 
-      {  13,  14,  15,  16,  71,  73,  74,  75, -1, -1,  -1,  -1,  -1,  -1 }, // 17: siebzehn
-      {  13,  14,  15,  16,  17,  18,  19,  20, -1, -1,  -1,  -1,  -1,  -1 }, // 18: achtzehn 
-      {  13,  14,  15,  16,  25,  26,  27,  28, -1, -1,  -1,  -1,  -1,  -1 }, // 19: neunzehn
-      {  77,  78,  79,  80,  81,  82,  83,  -1, -1, -1,  -1,  -1,  -1,  -1 }, // 20: zwanzig 
-      {  77,  78,  79,  80,  81,  82,  83,  84, 85, 86, 101, 102, 103,  -1 }, // 21: einundzwanzig
-      {  77,  78,  79,  80,  81,  82,  83,  84, 85, 86, 102, 103, 104, 105 }, // 22: zweiundzwanzig 
-      {  77,  78,  79,  80,  81,  82,  83,  84, 85, 86,  88,  89,  90,  91 }  // 23: dreiundzwanzig
+    const uint8_t maskHoursSwiss[25][maskSizeHoursDia] = 
+    { {  65,  64,  63,  OFF,  OFF,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 01: ein !
+      {  65,  64,  63,  OFF,  OFF,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 01: eins !
+      {  62,  61,  60,  59,  OFF,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 02: zwei !
+      {  57,  56,  55,  OFF,  OFF,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 03: drei !
+      {  44,  45,  46,  47,  48,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 04: vier !
+      {  49,  50,  51,  52,  OFF,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 05: fünf !
+      {  43,  42,  41,  40,  39,  38,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 06: sechs !
+      {  37,  36,  35,  34,  33,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 07: sieben !
+      {  22,  23,  24,  25,  26,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 08: acht !
+      {  27,  28,  29,  30,  31,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 09: neun !
+      {  21,  20,  19,  18,  OFF,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 10: zehn !
+      {  14,  13,  12,  11,  OFF,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 11: elf !
+      {   0,   1,   2,   3,   4,   5,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 12: zwölf !
+      {  65,  64,  63,  OFF,  OFF,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 13: eins !
+      {  62,  61,  60,  59,  OFF,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 14: zwei !
+      {  57,  56,  55,  OFF,  OFF,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 15: drei !
+      {  44,  45,  46,  47,  48,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 16: vier !
+      {  49,  50,  51,  52,  OFF,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 17: fünf !
+      {  43,  42,  41,  40,  39,  38,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 18: sechs !
+      {  37,  36,  35,  34,  33,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 19: sieben !
+      {  22,  23,  24,  25,  26,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 20: acht !
+      {  27,  28,  29,  30,  31,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 21: neun !
+      {  21,  20,  19,  18,  OFF,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 22: zehn !
+      {  14,  13,  12,  11,  OFF,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 23: elf !
+      {   0,   1,   2,   3,   4,  5,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 24: zwölf Uhr Mitternacht 
     };
  
-    int maskItIs[maskSizeItIs]      = { 110, 111, 113, 114, 115,  -1,  -1,  -1, -1};  // E S  I S T 
-    int maskItIsSwiss[maskSizeItIs] = { 110, 111, 113, 114, 115, 116,  -1,  -1, -1};  // E S  ISCH
-    int maskItIsSaxony[maskSizeItIs] = { 111, 112, 113, 114, 116, 117,  118,  119, 120};  // ITZE ISSES
+    uint8_t maskItIs[maskSizeItIs]      = { 110, 111, 113, 114, 115,   OFF,   OFF,   OFF,  OFF};  // E S  I S T 
+    uint8_t maskItIsSwiss[maskSizeItIs] = { 110, 111, 113, 114, 115, 116,   OFF,   OFF,  OFF};  // E S  ISCH
+    uint8_t maskItIsSaxony[maskSizeItIs] = { 111, 112, 113, 114, 116, 117,  118,  119, 120};  // ITZE ISSES
 
     // UHR ein- / ausblenden
     void set_oClock (int minute) 
@@ -181,15 +201,16 @@ class WordClock24Usermod: public Usermod
       }
      else
       {  
-        maskItIs[5] = -1;
-        maskItIs[6] = -1;
-        maskItIs[7] = -1;
+        maskItIs[5] =  0;
+        maskItIs[6] =  0;
+        maskItIs[7] =  0;
       }
     }
 
     // mask minute dots
     const int maskMinuteDots[maskSizeMinuteDots] = { 70, 71, 72, 73 };
     const int maskMinuteDotsSaxony[maskSizeMinuteDots] = { 83, 82, 81, 80 };
+    const int maskMinuteDotsSwiss[maskSizeMinuteDots] = { 83, 82, 81, 80 };
     // overall mask to define which LEDs are on
     int maskLedsOn[maskSizeLeds] = 
     {
@@ -207,13 +228,13 @@ class WordClock24Usermod: public Usermod
     };
 
     // update led mask
-    void updateLedMask(const int wordMask[], int arraySize)
+    void updateLedMask(const uint8_t wordMask[], int arraySize)
     {
       // loop over array
       for (int x=0; x < arraySize; x++) 
       {
         // check if mask has a valid LED number
-        if (wordMask[x] >= 0 && wordMask[x] < maskSizeLeds)
+        if (wordMask[x] != OFF && wordMask[x] < maskSizeLeds)
         {
           // turn LED on
           maskLedsOn[wordMask[x]] = 1;
@@ -224,7 +245,7 @@ class WordClock24Usermod: public Usermod
     // set hours
     void setHours(int hours, bool fullClock, int minute)
     {
-      int index = hours;
+      uint8_t index = hours;
 
       // handle 00:xx as 12:xx
       if (hours == 0)
@@ -270,14 +291,17 @@ class WordClock24Usermod: public Usermod
     }
 
     // set minutes
-    void setMinutes(int index)
+    void setMinutes(uint8_t index)
     {
       // update led mask
        switch(m_eDialect)
       {
         case eDIALECT::SAXONY:
+          updateLedMask(maskMinutesSaxony[index], maskSizeMinutes);
+          break;
+        
         case eDIALECT::SWISS:
-          updateLedMask(maskMinutesDialect[index], maskSizeMinutes);
+          updateLedMask(maskMinutesSwiss[index], maskSizeMinutes);
           break;
         
         default:
@@ -298,15 +322,20 @@ class WordClock24Usermod: public Usermod
         // activate all minute dots until number is reached
         for (int i = 0; i < minutesDotCount; i++)
         {
-      switch(m_eDialect)
-        {
-        case eDIALECT::SAXONY:
-          maskLedsOn[maskMinuteDotsSaxony[i]] = 1;  
-          break;
-        default:
-          maskLedsOn[maskMinuteDots[i]] = 1;  
-          break;
-        } 
+        switch(m_eDialect)
+          {
+          case eDIALECT::SAXONY:
+            maskLedsOn[maskMinuteDotsSaxony[i]] = 1;  
+            break;
+          
+          case eDIALECT::SWISS:
+            maskLedsOn[maskMinuteDotsSwiss[i]] = 1;  
+            break;
+
+          default:
+            maskLedsOn[maskMinuteDots[i]] = 1;  
+            break;
+          } 
         }
       }
     }
@@ -325,13 +354,16 @@ class WordClock24Usermod: public Usermod
       {
         switch(m_eDialect)
         {
+          case eDIALECT::SAXONY:
+            updateLedMask(maskItIsSaxony, maskSizeItIs);
+            break;
+
           case eDIALECT::SWISS:
             updateLedMask(maskItIsSwiss, maskSizeItIs);
             break;
 
-          case eDIALECT::SAXONY:
           default:
-            updateLedMask(maskItIsSaxony, maskSizeItIs);
+            updateLedMask(maskItIs, maskSizeItIs);
             break;
         }
       }
@@ -367,10 +399,10 @@ class WordClock24Usermod: public Usermod
             switch(m_eDialect)
             {
               case eDIALECT::SAXONY:
-              case eDIALECT::SWISS:
                 setHours(hours, false,minutes);
                 break;
 
+              case eDIALECT::SWISS:
               default:
                 setHours(hours+1, false,minutes);
                 break;  
@@ -382,10 +414,10 @@ class WordClock24Usermod: public Usermod
             switch(m_eDialect)
             {
               case eDIALECT::SAXONY:
-              case eDIALECT::SWISS:
                 setHours(hours, false,minutes);
                 break;
 
+              case eDIALECT::SWISS:
               default:
                 setHours(hours+1, false,minutes);
                 break;  
@@ -464,6 +496,8 @@ class WordClock24Usermod: public Usermod
       if (millis() - lastTime > 5000) 
       {
          DEBUG_PRINTLN("Updating WordClock24");
+         DEBUG_PRINT("Dialect: ");
+         DEBUG_PRINTLN(m_eDialect);
         // check the time
         int minutes = minute(localTime);
 
@@ -534,7 +568,7 @@ class WordClock24Usermod: public Usermod
      *   - "pin" can contain a single or array of integer values
      *   - On the Usermod Settings page there is simple checking for pin conflicts and warnings for special pins
      *     - Red color indicates a conflict.  Yellow color indicates a pin with a warning (e.g. an input-only pin)
-     *   - Tip: use int8_t to store the pin value in the Usermod, so a -1 value (pin not set) can be used
+     *   - Tip: use int8_t to store the pin value in the Usermod, so a  0 value (pin not set) can be used
      *
      * See usermod_v2_auto_save.h for an example that saves Flash space by reusing ArduinoJson key name strings
      * 
