@@ -80,7 +80,7 @@ class WordClock24Usermod: public Usermod
       {  V_ITZE_ISSES, V_KURZ_NACH, 77, 78, OFF,OFF, OFF, OFF, OFF, OFF, OFF, OFF}, // :05 fünf nach / kurz nach um
       {  V_GLEI_HAMMERS, V_VIERTEL, OFF,OFF,OFF,OFF, OFF, OFF, OFF, OFF, OFF, OFF}, // :10 zehn nach / glei hammers viertel
       {  V_ITZE_ISSES, V_VIERTEL, OFF, OFF,OFF,OFF,OFF,OFF , OFF, OFF, OFF, OFF, OFF, OFF}, // :15 viertel / itze isses viertel
-      {  V_ITZE_ISSES, V_KURZ_NACH, V_VIERTEL}, // :20 zehn vor halb / kurz nach viertel
+      {  V_ITZE_ISSES, V_KURZ_NACH, V_VIERTEL, OFF, OFF, OFF, OFF}, // :20 zehn vor halb / kurz nach viertel
       {  V_GLEI_HAMMERS, V_HALB, OFF,OFF,OFF,OFF,OFF,OFF , OFF, OFF, OFF, OFF, OFF, OFF}, // :25 fünf vor halb / kurz vor halb
       {  V_ITZE_ISSES, V_HALB, OFF, OFF, OFF, OFF, OFF, OFF,OFF, OFF , OFF, OFF, OFF, OFF, OFF, OFF}, // :30 halb / itze isses halb
       {  V_ITZE_ISSES, V_KURZ_NACH, V_HALB, OFF, OFF, OFF, OFF, OFF, OFF}, // :35 fünf nach halb / itze isses kurz nach halb
@@ -194,24 +194,20 @@ class WordClock24Usermod: public Usermod
       {   0,   1,   2,   3,   4,  5,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF , OFF}, // 24: zwölf Uhr Mitternacht 
     };
  
-    public: uint8_t maskItIs[maskSizeItIs]      = { 110, 111, 113, 114, 115,   8,  9,  10,  OFF}; // ES IST UHR
+    public: uint8_t maskItIs[maskSizeItIs]      = { 110, 111, 113, 114, 115,   OFF,  OFF,  OFF,  OFF}; // ES IST UHR
     public: uint8_t maskItIsSwiss[maskSizeItIs] = { 110, 111, 113, 114, 115, 116,  OFF,  OFF, OFF};  // ES ISCH
 
     // UHR ein- / ausblenden
     void setclocktag(uint8_t minute)
     { 
-     if (minute < 4)
+     if (minute <= 4)
       {
         maskItIs[5] =  8;  // U
         maskItIs[6] =  9;  // H
         maskItIs[7] = 10;  // R
-        //DEBUG_PRINTLN("UHR AN ");
-        //DEBUG_PRINT(minute);
       }
       else
       { 
-        //DEBUG_PRINTLN("UHR AUS ");
-        //DEBUG_PRINT(minute);
         maskItIs[5] = OFF;
         maskItIs[6] = OFF;
         maskItIs[7] = OFF;
@@ -357,17 +353,17 @@ class WordClock24Usermod: public Usermod
     // update the display
     void updateDisplay(uint8_t hours, uint8_t minutes) 
     {
-      // disable complete matrix at the bigging
-      clearledmask();
-      
-      // display it is/es ist if activated
 
+      //DEBUG SET MANUAL TIME FOR TESTS
+      //hours = 15;
+      //minutes = 00;    
+      // display it is/es ist if activated
       if (displayItIs)
       {
         switch(m_eDialect)
         {
           case eDIALECT::VOGTLAND:
-            //updateLedMask(maskItIs, maskSizeItIs);
+            //updateLedMask(maskItIs, maskSizeItIs); //<- sollte drinne bleiben...
             break;
 
           case eDIALECT::SWISS:
@@ -379,10 +375,6 @@ class WordClock24Usermod: public Usermod
             break;
         }
       }
-
-      // display UHR, if full hour
-      // set_oClock(minute(localTime));
-      setclocktag(minutes);
       
       // set single minute dots
       setSingleMinuteDots(minutes);
@@ -479,6 +471,9 @@ class WordClock24Usermod: public Usermod
             setHours(hours + 1, false,minutes);
             break;
         }
+
+      // display UHR, if full hour
+      // set_oClock(minute(localTime));
     }
 
   public:
@@ -512,6 +507,8 @@ class WordClock24Usermod: public Usermod
      */
     void loop() {
 
+      // disable complete matrix at the bigging
+      
       // do it every 5 seconds
       if (millis() - lastTime > 5000) 
       {
@@ -525,11 +522,12 @@ class WordClock24Usermod: public Usermod
         if (lastTimeMinutes != minutes)
         {
           // update the display with new time
+          setclocktag(minutes);
+          clearledmask();
           updateDisplay(hour(localTime), minute(localTime));
           // remember last update time
           lastTimeMinutes = minutes;
         }
-
         // remember last update
         lastTime = millis();
       }
