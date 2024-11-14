@@ -2,28 +2,27 @@
 #define __DCF77_H__
 
 /*
- * This usermod allows you to get date and time from a DCF77 module. This is usefull if 
+ * This usermod allows you to get date and time from a DCF77 module. This is usefull if
  * you don't have access to wifi / NTP.
  * The usermod uses a modified version of the DCF77 arduino library https://github.com/thijse/Arduino-DCF77.
- * 
+ *
  * The mod is tested with a D1 mini. I have no idea if it works with other controllers.
  * Connect the DCF77 modul as follows:
  *    - V to 3.3V
  *    - GND to GND
  *    - P1 (Enable) to GND
- *    - T (Signal) to e.g. GPIO15 - (D8 on D1 mini) 
+ *    - T (Signal) to e.g. GPIO15 - (D8 on D1 mini)
  *
  * You HAVE TO set the T (Signal) GPIO in usermod settings over the webinterface.
- * 
+ *
  * To enable this mod add it to usermods_list.cpp with the define USERMOD_DCF77.
  * Also add suitable USERMOD_ID_DCF77 to const.h.
  * To enable the module:
  *    add -DUSERMOD_DCF77 to your platformio_override.ini
  *    add -DPIO_FRAMEWORK_ARDUINO_MMU_CACHE16_IRAM48 - otherwise you'll get a compile error
- * 
+ *
  * If you have any questions, visit us at the star laboratory (sternenlabor) in Plauen.
  */
-
 
 #include <wled.h>
 
@@ -56,7 +55,6 @@ void setTime(time_t tim)
    printTime(tim);
    toki.setTime(tim, TOKI_NO_MS_ACCURACY, TOKI_TS_JSON);
 }
-
 
 class DCF77
 {
@@ -133,7 +131,7 @@ public:
       if (bufferPosition == 59)
       {
          // Buffer is full
-         DEBUG_PRINTLN("BF");
+         DEBUG_PRINTLN("Dcf77: buffer full");
          // Prepare filled buffer and time stamp for main loop
          filledBuffer = runningBuffer;
          filledTimestamp = now();
@@ -144,7 +142,7 @@ public:
       else
       {
          // Buffer is not yet full at end of time-sequence
-         DEBUG_PRINTLN("EoM");
+         DEBUG_PRINTLN("Dcf77 ERROR: data incomplete");
          // Reset running buffer
          bufferinit();
       }
@@ -160,7 +158,7 @@ public:
       // if buffer is filled, we will process it and see if this results in valid parity
       if (!processBuffer())
       {
-         DEBUG_PRINTLN("Invalid parity");
+         DEBUG_PRINTLN("Dcf77 ERROR: Invalid parity");
          return false;
       }
 
@@ -169,7 +167,7 @@ public:
       time_t processedTime = latestupdatedTime + (now() - processingTimestamp);
       if (processedTime < MIN_TIME || processedTime > MAX_TIME)
       {
-         DEBUG_PRINTLN("Time outside of bounds");
+         DEBUG_PRINTLN("Dcf77 ERROR: Time outside of bounds");
          return false;
       }
 
@@ -177,7 +175,7 @@ public:
       time_t difference = abs(processedTime - now());
       if (difference < 2 * SECS_PER_MIN)
       {
-         DEBUG_PRINTLN("close to internal clock");
+         DEBUG_PRINTLN("Dcf77: close to internal clock");
          storePreviousTime();
          return true;
       }
@@ -190,12 +188,12 @@ public:
       storePreviousTime();
       if (shiftDifference < 2 * SECS_PER_MIN)
       {
-         DEBUG_PRINTLN("time lag consistent");
+         DEBUG_PRINTLN("Dcf77: time lag consistent");
          return true;
       }
       else
       {
-         DEBUG_PRINTLN("time lag inconsistent");
+         DEBUG_PRINTLN("Dcf77 ERROR: time lag inconsistent");
       }
 
       // If lag is inconsistent, this may be because of no previous stored date
@@ -296,7 +294,7 @@ public:
       {
          // Buffer is full before at end of time-sequence
          // this may be due to noise giving additional peaks
-         DEBUG_PRINTLN("EoB");
+         DEBUG_PRINTLN("Dcf77 ERROR: EoB");
          finalizeBuffer();
       }
    }
@@ -308,7 +306,6 @@ public:
       dCFinterrupt = DCFinterrupt;
       pulseStart = OnRisingFlank ? HIGH : LOW;
 
-      pinMode(dCF77Pin, INPUT_PULLUP);
       initialize();
    }
 
@@ -343,8 +340,16 @@ public:
 
    void Start(void)
    {
-      attachInterrupt(digitalPinToInterrupt(dCF77Pin), int0handler, CHANGE);
-      // attachInterrupt(dCFinterrupt, int0handler, CHANGE);
+
+      if (pinManager.allocatePin(dCF77Pin, false, PinOwner::UM_Unspecified))
+      {
+         pinMode(dCF77Pin, INPUT_PULLUP);
+         attachInterrupt(digitalPinToInterrupt(dCF77Pin), int0handler, CHANGE);
+      }
+      else
+      {
+         DEBUG_PRINTLN("Dcf77 ERROR: Can't allocate pin.");
+      }
    }
 
    void Stop(void)
@@ -376,7 +381,7 @@ static void IRAM_ATTR int0handler()
    // this will be an incorrect pulse that we shall reject
    if ((flankTime - g_pDcf77Instance->PreviousLeadingEdge) < DCFRejectionTime)
    {
-      DEBUG_PRINTLN("rCT");
+      DEBUG_PRINTLN("Dcf77 ERROR: quick change in signal");
       return;
    }
 
@@ -384,7 +389,7 @@ static void IRAM_ATTR int0handler()
    // incorrect pulse that we shall reject as well
    if ((flankTime - g_pDcf77Instance->leadingEdge) < DCFRejectPulseWidth)
    {
-      DEBUG_PRINTLN("rPW");
+      DEBUG_PRINTLN("Dcf77 ERROR: signal too short");
       return;
    }
 
@@ -446,7 +451,7 @@ public:
          {
             if (m_iDcfPin > 0)
             {
-               DEBUG_PRINT("Found valid GPIO setting for DCF77 Signal(t) using GPIO: ");
+               DEBUG_PRINT("Dcf77: Found valid GPIO setting for Signal(t) using GPIO: ");
                DEBUG_PRINTLN(m_iDcfPin);
                m_pDcf = new DCF77(m_iDcfPin, m_iDcfPin);
                g_pDcf77Instance = m_pDcf;
@@ -454,7 +459,7 @@ public:
             }
             else
             {
-               DEBUG_PRINTLN("There is no valid GPIO setting for DCF77 Signal(t) - Try \"15\" for GPIO15 (D8).");
+               DEBUG_PRINTLN("Dcf77 ERROR: There is no valid GPIO setting for Signal(t) - Try \"15\" for GPIO15.");
             }
          }
          else
@@ -462,13 +467,13 @@ public:
             time_t DCFtime = m_pDcf->getTime(); // Check if new DCF77 time is available
             if (DCFtime != 0)
             {
-               DEBUG_PRINT("Time was updated by DCF77: ");
+               DEBUG_PRINT("Dcf77: Time was updated: ");
                printTime(DCFtime);
                setTime(DCFtime);
             }
             else
             {
-               DEBUG_PRINTLN("Waiting for DCF77 time update.");
+               DEBUG_PRINTLN("Dcf77: Waiting for time update.");
                // printTime(localTime);
             }
          }
@@ -509,7 +514,7 @@ public:
 
    virtual void appendConfigData() override
    {
-      oappend(SET_F("addInfo('Dcf77:GPIO',1,' t-signal of DCF77 module. Use 15 for GPIO15 (D8-Pin on D1-mini).');"));
+      oappend(SET_F("addInfo('Dcf77:GPIO',1,' t-signal of DCF77 module. Use 15 for GPIO15.');"));
    }
 
    /*
