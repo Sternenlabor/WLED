@@ -141,10 +141,6 @@
   #include "../usermods/usermod_v2_word_clock/usermod_v2_word_clock.h"
 #endif
 
-#ifdef USERMOD_WORDCLOCK_24
-  #include "../usermods/usermod_v2_word_clock24/usermod_v2_word_clock24.h"
-#endif
-
 #ifdef USERMOD_MY9291
   #include "../usermods/MY9291/usermode_MY9291.h"
 #endif
@@ -183,6 +179,14 @@
 
 #ifdef USERMOD_INTERNAL_TEMPERATURE
   #include "../usermods/Internal_Temperature_v2/usermod_internal_temperature.h"
+#endif
+
+#ifdef USERMOD_WORDCLOCK_24
+  #include "../usermods/usermod_v2_word_clock24/usermod_v2_word_clock24.h"
+#endif
+
+#ifdef USERMOD_DCF77
+  #include "../usermods/dcf77/dcf77.h"
 #endif
 
 #if defined(WLED_USE_SD_MMC) || defined(WLED_USE_SD_SPI)
@@ -394,5 +398,7 @@ void registerUsermods()
 
   #ifdef USERMOD_STAIRCASE_WIPE
   usermods.add(new StairwayWipeUsermod());
+  #ifdef USERMOD_DCF77
+  usermods.add(new UsermodDcf77());
   #endif
 }
