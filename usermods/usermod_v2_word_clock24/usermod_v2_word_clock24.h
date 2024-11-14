@@ -27,7 +27,7 @@ class WordClock24Usermod: public Usermod
   {
     FIRST,
     NONE = FIRST,
-    SAXONY,
+    VOGTLAND,
     SWISS,
     LAST
   };
@@ -51,7 +51,7 @@ class WordClock24Usermod: public Usermod
     #define maskSizeMinuteDots  4
 
     // "minute" masks
-    // Normal wiring
+    // Wiring for Normal
     const uint8_t maskMinutes[12][maskSizeMinutes] = 
     { {   8,   9,   10,  OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF }, // :00
       {   66,  67,  68,  69, 106, 107, 108, 109,   OFF,   OFF,   OFF,   OFF }, // :05 fünf nach
@@ -67,23 +67,34 @@ class WordClock24Usermod: public Usermod
       {   74,  75,  76, 106, 107, 108, 109,   OFF,   OFF,   OFF,   OFF,   OFF }, // :55 fünf vor 
     };
 
-    // Meander wiring for saxony
-    const uint8_t maskMinutesSaxony[12][maskSizeMinutes] =
-    { {  8,  9,  10,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF }, // :00
-      {  66,  67,  68,  69, 106, 107, 108, 109,   OFF,   OFF,   OFF,   OFF }, // :05 fünf nach
-      {  66,  67,  68,  69, 117, 118, 119, 120,   OFF,   OFF,   OFF,   OFF }, // :10 zehn nach
-      {  66,  67,  68,  69,  92,  93,  94,  95,  96,  97,  98,   OFF }, // :15 viertel nach   
-      {  66,  67,  68,  69,  77,  78,  79,  80,  81,  82,  83,   OFF }, // :20 zwanzig nach
-      {  62,  63,  64,  65,  74,  75,  76, 106, 107, 108, 109,   OFF }, // :25 fünf vor halb
-      {  62,  63,  64,  65,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF }, // :30 halb
-      {  62,  63,  64,  65,  66,  67,  68,  69, 106, 107, 108, 109 }, // :35 fünf nach halb
-      {  74,  75,  76,  77,  78,  79,  80,  81,  82,  83,   OFF,   OFF }, // :40 zwanzig vor
-      {  74,  75,  76,  92,  93,  94,  95,  96,  97,  98,   OFF,   OFF }, // :45 viertel vor
-      {  74,  75,  76, 117, 118, 119, 120,   OFF,   OFF,   OFF,   OFF,   OFF }, // :50 zehn vor
-      {  74,  75,  76, 106, 107, 108, 109,   OFF,   OFF,   OFF,   OFF,   OFF }, // :55 fünf vor 
-    };
+    // Wiring for Vogtland
+    #define V_VIERTEL 70, 71, 72, 73, 74, 75 // 6
+    #define V_HALB 87,86,85,84 // 4
+    #define V_DREIVIERTEL 66,67,68,69,V_VIERTEL // 10
+    #define V_HAMMERS 92, 93, 94, 95, 96, 97, 98 // 7
+    #define V_GLEI_HAMMERS 109, 108, 107, 106, V_HAMMERS // 11
+    #define V_NU_HAMMERS 114, 115, V_HAMMERS // 9
+    #define V_ITZE_ISSES 110, 111, 112, 113, 116, 117,  118,  119, 120 // 9
+    #define V_KURZ_NACH 101, 102, 103, 104, 88, 89, 90, 91 // 8
 
-    // Meander wiring for swiss
+    const uint8_t maskMinutesVogtland[12][21] =
+    { {  V_NU_HAMMERS, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF}, // :00 nu hammers
+      {  V_KURZ_NACH, 77, 78, OFF,OFF,OFF,OFF,OFF,OFF,OFF,OFF,OFF,OFF,OFF}, // :05 fünf nach / kurz nach um
+      {  V_GLEI_HAMMERS, V_VIERTEL, OFF,OFF,OFF,OFF}, // :10 zehn nach / glei hammers viertel
+      {  V_ITZE_ISSES, V_VIERTEL,   OFF, OFF,OFF,OFF,OFF,OFF }, // :15 viertel / itze isses viertel
+      {  V_KURZ_NACH, V_VIERTEL, OFF,OFF,OFF,OFF,OFF,OFF,OFF }, // :20 zehn vor halb / kurz nach viertel
+      {  V_GLEI_HAMMERS, V_HALB, OFF,OFF,OFF,OFF,OFF,OFF }, // :25 fünf vor halb / kurz vor halb
+      {  V_ITZE_ISSES, V_HALB, OFF, OFF, OFF, OFF, OFF, OFF,OFF, OFF }, // :30 halb / itze isses halb
+      {  V_KURZ_NACH, V_HALB,  OFF,OFF,OFF,OFF,OFF,OFF,OFF,OFF,OFF}, // :35 fünf nach halb / kurz nach halb
+      {  V_GLEI_HAMMERS, V_DREIVIERTEL }, // :40 zehn nach halb / glei hammers dreiviertel
+      {  V_ITZE_ISSES, V_DREIVIERTEL, OFF, OFF }, // :45 dreiviertel
+      {  V_KURZ_NACH, V_DREIVIERTEL,   OFF, OFF, OFF }, // :50 kurz nach dreiviertel
+      {  V_GLEI_HAMMERS, 77, 78, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF}, // :55 fünf vor / glei hammers um
+    };
+    // {  109,  108,  107,  106, 92, 93, 94, 95,  96,  97, 98, }, // :10 zehn nach  / glei hammers 
+    
+    
+    // Wiring for swiss
     const uint8_t maskMinutesSwiss[12][maskSizeMinutes] =
     { {    OFF,    OFF,    OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF }, // :00
       {   118,  119,  120,  87, 86,  OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // :05 fünf nach
@@ -100,7 +111,7 @@ class WordClock24Usermod: public Usermod
     };
 
     // hour masks
-    // Normal wiring
+    // Wiring for Normal
     const uint8_t maskHours[25][maskSizeHours] = 
     { {  51,  52,  53,   OFF,   OFF,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 01: ein
       {  51,  52,  53,  54,   OFF,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 01: eins
@@ -129,8 +140,8 @@ class WordClock24Usermod: public Usermod
       {   1,   2,   3,   4,   5,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 24: zwölf Uhr Mitternacht
     };
 
-    // Meander wiring
-    const uint8_t maskHoursSaxony[24][maskSizeHoursDia] = 
+    // Wiring for Vogtland
+    const uint8_t maskHoursVogtland[25][maskSizeHoursDia] = 
     { {  51,  52,  53,   OFF,   OFF,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 01: ein
       {  51,  52,  53,  54,   OFF,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 01: eins
       {  44,  45,  46,  47,   OFF,   OFF,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 02: zwei
@@ -154,10 +165,11 @@ class WordClock24Usermod: public Usermod
       {  77,  78,  79,  80,  81,  82,  83,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF }, // 20: zwanzig 
       {  77,  78,  79,  80,  81,  82,  83,  84, 85, 86, 101, 102, 103,   OFF }, // 21: einundzwanzig
       {  77,  78,  79,  80,  81,  82,  83,  84, 85, 86, 102, 103, 104, 105 }, // 22: zweiundzwanzig 
-      {  77,  78,  79,  80,  81,  82,  83,  84, 85, 86,  88,  89,  90,  91 }  // 23: dreiundzwanzig
+      {  77,  78,  79,  80,  81,  82,  83,  84, 85, 86,  88,  89,  90,  91 },  // 23: dreiundzwanzig
+      {   21,   20,   19,   18,   17,   16,   OFF,   OFF,  OFF,  OFF,   OFF,   OFF,   OFF,   OFF },  // zwälfe
     };
 
-    // Meander wiring hours
+    // Wiring for swiss
     const uint8_t maskHoursSwiss[25][maskSizeHoursDia] = 
     { {  65,  64,  63,  OFF,  OFF,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 01: ein !
       {  65,  64,  63,  OFF,  OFF,  OFF,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF }, // 01: eins !
@@ -188,7 +200,7 @@ class WordClock24Usermod: public Usermod
  
     uint8_t maskItIs[maskSizeItIs]      = { 110, 111, 113, 114, 115,   OFF,   OFF,   OFF,  OFF};  // E S  I S T 
     uint8_t maskItIsSwiss[maskSizeItIs] = { 110, 111, 113, 114, 115, 116,   OFF,   OFF,  OFF};  // E S  ISCH
-    uint8_t maskItIsSaxony[maskSizeItIs] = { 111, 112, 113, 114, 116, 117,  118,  119, 120};  // ITZE ISSES
+    //uint8_t maskItIsVogtland[maskSizeItIs] = { 110, 111, 112, 113, 116, 117,  118,  119, 120};  // ITZE ISSES
 
     // UHR ein- / ausblenden
     void set_oClock (int minute) 
@@ -201,15 +213,15 @@ class WordClock24Usermod: public Usermod
       }
      else
       {  
-        maskItIs[5] =  0;
-        maskItIs[6] =  0;
-        maskItIs[7] =  0;
+        maskItIs[5] =  OFF;
+        maskItIs[6] =  OFF;
+        maskItIs[7] =  OFF;
       }
     }
 
     // mask minute dots
     const int maskMinuteDots[maskSizeMinuteDots] = { 70, 71, 72, 73 };
-    const int maskMinuteDotsSaxony[maskSizeMinuteDots] = { 83, 82, 81, 80 };
+    const int maskMinuteDotsVogtland[maskSizeMinuteDots] = { 83, 82, 81, 80 };
     const int maskMinuteDotsSwiss[maskSizeMinuteDots] = { 83, 82, 81, 80 };
     // overall mask to define which LEDs are on
     int maskLedsOn[maskSizeLeds] = 
@@ -240,6 +252,8 @@ class WordClock24Usermod: public Usermod
           maskLedsOn[wordMask[x]] = 1;
         }
       }
+      // Fix fucking first led on
+      // maskLedsOn[0] = 0;
     }
 
     // set hours
@@ -276,8 +290,8 @@ class WordClock24Usermod: public Usermod
       // update led mask
       switch(m_eDialect)
       {
-        case eDIALECT::SAXONY:
-          updateLedMask(maskHoursSaxony[index], maskSizeHoursDia);
+        case eDIALECT::VOGTLAND:
+          updateLedMask(maskHoursVogtland[index], maskSizeHoursDia);
           break;
         
         case eDIALECT::SWISS:
@@ -296,8 +310,8 @@ class WordClock24Usermod: public Usermod
       // update led mask
        switch(m_eDialect)
       {
-        case eDIALECT::SAXONY:
-          updateLedMask(maskMinutesSaxony[index], maskSizeMinutes);
+        case eDIALECT::VOGTLAND:
+          updateLedMask(maskMinutesVogtland[index], maskSizeMinutes);
           break;
         
         case eDIALECT::SWISS:
@@ -324,8 +338,8 @@ class WordClock24Usermod: public Usermod
         {
         switch(m_eDialect)
           {
-          case eDIALECT::SAXONY:
-            maskLedsOn[maskMinuteDotsSaxony[i]] = 1;  
+          case eDIALECT::VOGTLAND:
+            maskLedsOn[maskMinuteDotsVogtland[i]] = 1;  
             break;
           
           case eDIALECT::SWISS:
@@ -354,8 +368,8 @@ class WordClock24Usermod: public Usermod
       {
         switch(m_eDialect)
         {
-          case eDIALECT::SAXONY:
-            updateLedMask(maskItIsSaxony, maskSizeItIs);
+          case eDIALECT::VOGTLAND:
+            //updateLedMask(maskItIsVogtland, maskSizeItIs);
             break;
 
           case eDIALECT::SWISS:
@@ -398,7 +412,7 @@ class WordClock24Usermod: public Usermod
             setMinutes(3);
             switch(m_eDialect)
             {
-              case eDIALECT::SAXONY:
+              case eDIALECT::VOGTLAND:
                 setHours(hours, false,minutes);
                 break;
 
@@ -413,7 +427,7 @@ class WordClock24Usermod: public Usermod
             setMinutes(4);
             switch(m_eDialect)
             {
-              case eDIALECT::SAXONY:
+              case eDIALECT::VOGTLAND:
                 setHours(hours, false,minutes);
                 break;
 
@@ -619,7 +633,7 @@ class WordClock24Usermod: public Usermod
 
     virtual void appendConfigData() override
     {
-      oappend(SET_F("addInfo('WordClock24Usermod:Dialect',1,'0=None,1=Saxony,2=Swiss');"));
+      oappend(SET_F("addInfo('WordClock24Usermod:Dialect',1,'0=None,1=Vogtland,2=Swiss');"));
     }
 
     /*
