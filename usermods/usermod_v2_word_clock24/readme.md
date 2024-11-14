@@ -25,7 +25,7 @@ This file should be placed in the same directory as `platformio.ini`.
 
 ### Define Your Options
 
-* `USERMOD_WORDCLOCK`   - define this to have this the Auto Save usermod included wled00\usermods_list.cpp
+* `USERMOD_WORDCLOCK_24`   - define this to have this the Auto Save usermod included wled00\usermods_list.cpp
 
 ### PlatformIO requirements
 

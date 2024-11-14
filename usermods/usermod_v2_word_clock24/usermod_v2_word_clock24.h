@@ -391,6 +391,7 @@ class WordClock24Usermod: public Usermod
       // do it every 5 seconds
       if (millis() - lastTime > 5000) 
       {
+         DEBUG_PRINTLN("Updating WordClock24");
         // check the time
         int minutes = minute(localTime);
 

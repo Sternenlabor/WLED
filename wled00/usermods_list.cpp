@@ -141,6 +141,10 @@
   #include "../usermods/usermod_v2_word_clock/usermod_v2_word_clock.h"
 #endif
 
+#ifdef USERMOD_WORDCLOCK_24
+  #include "../usermods/usermod_v2_word_clock24/usermod_v2_word_clock24.h"
+#endif
+
 #ifdef USERMOD_MY9291
   #include "../usermods/MY9291/usermode_MY9291.h"
 #endif
@@ -326,6 +330,10 @@ void registerUsermods()
 
   #ifdef USERMOD_WORDCLOCK
   usermods.add(new WordClockUsermod());
+  #endif
+
+  #ifdef USERMOD_WORDCLOCK_24
+  usermods.add(new WordClock24Usermod());
   #endif
 
   #ifdef USERMOD_MY9291
