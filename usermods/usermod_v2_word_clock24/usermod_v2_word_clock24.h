@@ -42,7 +42,7 @@ class WordClock24Usermod: public Usermod
     // defines for mask sizes
     #define maskSizeLeds        121 
     #define maskSizeMinutes     12
-    #define maskSizeMinutesDia  21
+    #define maskSizeMinutesDia   27
     #define maskSizeHours       14
     #define maskSizeHoursDia    15
     #define maskSizeItIs        9
@@ -51,7 +51,7 @@ class WordClock24Usermod: public Usermod
     // "minute" masks
     // Wiring for Normal
     const uint8_t maskMinutes[12][maskSizeMinutes] = 
-    { {   8,   9,   10,  OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF }, // :00
+    { {   OFF,   OFF,   OFF,  OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF,   OFF }, // :00
       {   66,  67,  68,  69, 106, 107, 108, 109,   OFF,   OFF,   OFF,   OFF }, // :05 fünf nach
       {   66,  67,  68,  69, 117, 118, 119, 120,   OFF,   OFF,   OFF,   OFF,}, // :10 zehn nach
       {   92,  93,  94,  95,  96,  97,  98,   OFF,   OFF,   OFF,   OFF,   OFF }, // :15 viertel
@@ -76,21 +76,19 @@ class WordClock24Usermod: public Usermod
     #define V_KURZ_NACH 101, 102, 103, 104, 88, 89, 90, 91 // 8
 
     const uint8_t maskMinutesVogtland[12][maskSizeMinutesDia] =
-    { {  V_NU_HAMMERS, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF}, // :00 nu hammers
-      {  V_ITZE_ISSES, V_KURZ_NACH, 77, 78, OFF,OFF}, // :05 fünf nach / kurz nach um
-      {  V_GLEI_HAMMERS, V_VIERTEL, OFF,OFF,OFF,OFF}, // :10 zehn nach / glei hammers viertel
-      {  V_ITZE_ISSES, V_VIERTEL, OFF, OFF,OFF,OFF,OFF,OFF }, // :15 viertel / itze isses viertel
-      {  V_KURZ_NACH, V_VIERTEL, OFF,OFF,OFF,OFF,OFF,OFF,OFF }, // :20 zehn vor halb / kurz nach viertel
-      {  V_GLEI_HAMMERS, V_HALB, OFF,OFF,OFF,OFF,OFF,OFF }, // :25 fünf vor halb / kurz vor halb
-      {  V_ITZE_ISSES, V_HALB, OFF, OFF, OFF, OFF, OFF, OFF,OFF, OFF }, // :30 halb / itze isses halb
-      {  V_ITZE_ISSES, V_KURZ_NACH, V_HALB}, // :35 fünf nach halb / itze isses kurz nach halb
-      {  V_GLEI_HAMMERS, V_DREIVIERTEL }, // :40 zehn nach halb / glei hammers dreiviertel
-      {  V_ITZE_ISSES, V_DREIVIERTEL, OFF, OFF }, // :45 dreiviertel
-      {  V_KURZ_NACH, V_DREIVIERTEL,   OFF, OFF, OFF }, // :50 kurz nach dreiviertel
-      {  V_GLEI_HAMMERS, 77, 78, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF}, // :55 fünf vor / glei hammers um
+    { {  V_NU_HAMMERS, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF}, // :00 nu hammers
+      {  V_ITZE_ISSES, V_KURZ_NACH, 77, 78, OFF,OFF, OFF, OFF, OFF, OFF, OFF, OFF}, // :05 fünf nach / kurz nach um
+      {  V_GLEI_HAMMERS, V_VIERTEL, OFF,OFF,OFF,OFF, OFF, OFF, OFF, OFF, OFF, OFF}, // :10 zehn nach / glei hammers viertel
+      {  V_ITZE_ISSES, V_VIERTEL, OFF, OFF,OFF,OFF,OFF,OFF , OFF, OFF, OFF, OFF, OFF, OFF}, // :15 viertel / itze isses viertel
+      {  V_ITZE_ISSES, V_KURZ_NACH, V_VIERTEL}, // :20 zehn vor halb / kurz nach viertel
+      {  V_GLEI_HAMMERS, V_HALB, OFF,OFF,OFF,OFF,OFF,OFF , OFF, OFF, OFF, OFF, OFF, OFF}, // :25 fünf vor halb / kurz vor halb
+      {  V_ITZE_ISSES, V_HALB, OFF, OFF, OFF, OFF, OFF, OFF,OFF, OFF , OFF, OFF, OFF, OFF, OFF, OFF}, // :30 halb / itze isses halb
+      {  V_ITZE_ISSES, V_KURZ_NACH, V_HALB, OFF, OFF, OFF, OFF, OFF, OFF}, // :35 fünf nach halb / itze isses kurz nach halb
+      {  V_GLEI_HAMMERS, V_DREIVIERTEL , OFF, OFF, OFF, OFF, OFF, OFF}, // :40 zehn nach halb / glei hammers dreiviertel
+      {  V_ITZE_ISSES, V_DREIVIERTEL, OFF, OFF , OFF, OFF, OFF, OFF, OFF, OFF}, // :45 dreiviertel
+      {  V_ITZE_ISSES, V_KURZ_NACH, V_DREIVIERTEL }, // :50 10 vor / itze isses kurz nach dreiviertel
+      {  V_GLEI_HAMMERS, 77, 78, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF}, // :55 fünf vor / glei hammers um
     };
-    // {  109,  108,  107,  106, 92, 93, 94, 95,  96,  97, 98, }, // :10 zehn nach  / glei hammers 
-    
     
     // Wiring for swiss
     const uint8_t maskMinutesSwiss[12][maskSizeMinutes] =
@@ -196,20 +194,24 @@ class WordClock24Usermod: public Usermod
       {   0,   1,   2,   3,   4,  5,  OFF,  OFF, OFF, OFF,  OFF,  OFF,  OFF,  OFF , OFF}, // 24: zwölf Uhr Mitternacht 
     };
  
-    public: uint8_t maskItIs[maskSizeItIs]      = { 110, 111, 113, 114, 115,   8,  9,   10,  OFF};  // ES IST UHR
-    public: uint8_t maskItIsSwiss[maskSizeItIs] = { 110, 111, 113, 114, 115, 116,   OFF,   OFF,  OFF};  // ES ISCH
+    public: uint8_t maskItIs[maskSizeItIs]      = { 110, 111, 113, 114, 115,   8,  9,  10,  OFF}; // ES IST UHR
+    public: uint8_t maskItIsSwiss[maskSizeItIs] = { 110, 111, 113, 114, 115, 116,  OFF,  OFF, OFF};  // ES ISCH
 
     // UHR ein- / ausblenden
-    void set_oClock(uint8_t minute)
+    void setclocktag(uint8_t minute)
     { 
      if (minute < 4)
       {
         maskItIs[5] =  8;  // U
         maskItIs[6] =  9;  // H
         maskItIs[7] = 10;  // R
+        //DEBUG_PRINTLN("UHR AN ");
+        //DEBUG_PRINT(minute);
       }
       else
       { 
+        //DEBUG_PRINTLN("UHR AUS ");
+        //DEBUG_PRINT(minute);
         maskItIs[5] = OFF;
         maskItIs[6] = OFF;
         maskItIs[7] = OFF;
@@ -217,11 +219,11 @@ class WordClock24Usermod: public Usermod
     }
 
     // mask minute dots
-    const int maskMinuteDots[maskSizeMinuteDots] = { 70, 71, 72, 73 };
-    const int maskMinuteDotsVogtland[maskSizeMinuteDots] = { 83, 82, 81, 80 };
+    const uint8_t maskMinuteDots[maskSizeMinuteDots] = { 70, 71, 72, 73 };
+    const uint8_t maskMinuteDotsVogtland[maskSizeMinuteDots] = { 83, 82, 81, 80 };
 
     // overall mask to define which LEDs are on
-    int maskLedsOn[maskSizeLeds] = 
+    uint8_t maskLedsOn[maskSizeLeds] = 
     {
       0,0,0,0,0,0,0,0,0,0,0, 
       0,0,0,0,0,0,0,0,0,0,0,
@@ -235,18 +237,20 @@ class WordClock24Usermod: public Usermod
       0,0,0,0,0,0,0,0,0,0,0,
       0,0,0,0,0,0,0,0,0,0,0
     };
-
-    // update led mask
-    void updateLedMask(const uint8_t wordMask[], int arraySize)
-    {
+    void clearledmask(){
       // loop over array
-      for (int x=0; x < arraySize; x++) 
+      for (uint8_t x=0; x < maskSizeLeds; x++) 
       {
-        maskLedsOn[x] = 0;
+        maskLedsOn[x] = 0;     
       }
-      for (int x=0; x < arraySize; x++) 
-      {
+        
+    }
+    // update led mask
+    void updateLedMask(const uint8_t wordMask[], uint8_t arraySize)
+    {
 
+      for (uint8_t x=0; x < arraySize; x++) 
+      {
         // check if mask has a valid LED number
         if (wordMask[x] < maskSizeLeds)
         {
@@ -257,7 +261,7 @@ class WordClock24Usermod: public Usermod
     }
 
     // set hours
-    void setHours(int hours, bool fullClock, int minute)
+    void setHours(uint8_t hours, bool fullClock, uint8_t minute)
     {
       uint8_t index = hours;
 
@@ -284,7 +288,7 @@ class WordClock24Usermod: public Usermod
         if (minute > 4 )
         {
            index = hours - 12;
-        };
+        }
       }
 
       // update led mask
@@ -325,16 +329,16 @@ class WordClock24Usermod: public Usermod
     }
 
     // set minutes dot
-    void setSingleMinuteDots(int minutes)
+    void setSingleMinuteDots(uint8_t minutes)
     {
       // modulo to get minute dots
-      int minutesDotCount = minutes % 5;
+      uint8_t minutesDotCount = minutes % 5;
 
       // check if minute dots are active
       if (minutesDotCount > 0)
       {
         // activate all minute dots until number is reached
-        for (int i = 0; i < minutesDotCount; i++)
+        for (uint8_t i = 0; i < minutesDotCount; i++)
         {
         switch(m_eDialect)
           {
@@ -345,7 +349,7 @@ class WordClock24Usermod: public Usermod
           default:
             maskLedsOn[maskMinuteDots[i]] = 1;  
             break;
-          } 
+          }
         }
       }
     }
@@ -354,16 +358,18 @@ class WordClock24Usermod: public Usermod
     void updateDisplay(uint8_t hours, uint8_t minutes) 
     {
       // disable complete matrix at the bigging
-      for (int x = 0; x < maskSizeLeds; x++)
-      {
-        maskLedsOn[x] = 0; // 1: alle an; 0: alle aus
-      }
+      clearledmask();
       
       // display it is/es ist if activated
+
       if (displayItIs)
       {
         switch(m_eDialect)
         {
+          case eDIALECT::VOGTLAND:
+            //updateLedMask(maskItIs, maskSizeItIs);
+            break;
+
           case eDIALECT::SWISS:
             updateLedMask(maskItIsSwiss, maskSizeItIs);
             break;
@@ -376,7 +382,7 @@ class WordClock24Usermod: public Usermod
 
       // display UHR, if full hour
       // set_oClock(minute(localTime));
-      set_oClock(minutes); 
+      setclocktag(minutes);
       
       // set single minute dots
       setSingleMinuteDots(minutes);
@@ -513,7 +519,7 @@ class WordClock24Usermod: public Usermod
         //DEBUG_PRINT("Dialect: ");
         //DEBUG_PRINTLN(m_eDialect);
         // check the time
-        int minutes = minute(localTime);
+        uint8_t minutes = minute(localTime);
 
         // check if we already updated this minute
         if (lastTimeMinutes != minutes)
@@ -646,7 +652,7 @@ class WordClock24Usermod: public Usermod
       if (usermodActive == true)
       {
         // loop over all leds
-        for (int x = 0; x < maskSizeLeds; x++)
+        for (uint8_t x = 0; x < maskSizeLeds; x++)
         {
           // check mask
           if (maskLedsOn[x] == 0)
