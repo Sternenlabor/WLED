@@ -44,7 +44,7 @@ class WordClock24Usermod: public Usermod
     #define maskSizeMinutes     12
     #define maskSizeHours       14
     #define maskSizeHoursDia    15
-    #define maskSizeItIs        8
+    #define maskSizeItIs        9
     #define maskSizeMinuteDots  4
 
     // "minute" masks
@@ -166,8 +166,9 @@ class WordClock24Usermod: public Usermod
       {  77,  78,  79,  80,  81,  82,  83,  84, 85, 86,  88,  89,  90,  91 }  // 23: dreiundzwanzig
     };
  
-    int maskItIs[maskSizeItIs]      = { 110, 111, 113, 114, 115,  -1,  -1,  -1};  // E S  I S T 
-    int maskItIsSwiss[maskSizeItIs] = { 110, 111, 113, 114, 115, 116,  -1,  -1};  // E S  ISCH
+    int maskItIs[maskSizeItIs]      = { 110, 111, 113, 114, 115,  -1,  -1,  -1, -1};  // E S  I S T 
+    int maskItIsSwiss[maskSizeItIs] = { 110, 111, 113, 114, 115, 116,  -1,  -1, -1};  // E S  ISCH
+    int maskItIsSaxony[maskSizeItIs] = { 111, 112, 113, 114, 116, 117,  118,  119, 120};  // ITZE ISSES
 
     // UHR ein- / ausblenden
     void set_oClock (int minute) 
@@ -188,7 +189,7 @@ class WordClock24Usermod: public Usermod
 
     // mask minute dots
     const int maskMinuteDots[maskSizeMinuteDots] = { 70, 71, 72, 73 };
-
+    const int maskMinuteDotsSaxony[maskSizeMinuteDots] = { 83, 82, 81, 80 };
     // overall mask to define which LEDs are on
     int maskLedsOn[maskSizeLeds] = 
     {
@@ -297,8 +298,15 @@ class WordClock24Usermod: public Usermod
         // activate all minute dots until number is reached
         for (int i = 0; i < minutesDotCount; i++)
         {
-          // activate LED
-          maskLedsOn[maskMinuteDots[i]] = 1;   
+      switch(m_eDialect)
+        {
+        case eDIALECT::SAXONY:
+          maskLedsOn[maskMinuteDotsSaxony[i]] = 1;  
+          break;
+        default:
+          maskLedsOn[maskMinuteDots[i]] = 1;  
+          break;
+        } 
         }
       }
     }
@@ -323,7 +331,7 @@ class WordClock24Usermod: public Usermod
 
           case eDIALECT::SAXONY:
           default:
-            updateLedMask(maskItIs, maskSizeItIs);
+            updateLedMask(maskItIsSaxony, maskSizeItIs);
             break;
         }
       }
