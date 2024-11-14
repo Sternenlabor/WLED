@@ -79,7 +79,7 @@ class WordClock24Usermod: public Usermod
 
     const uint8_t maskMinutesVogtland[12][21] =
     { {  V_NU_HAMMERS, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF, OFF}, // :00 nu hammers
-      {  V_KURZ_NACH, 77, 78, OFF,OFF,OFF,OFF,OFF,OFF,OFF,OFF,OFF,OFF,OFF}, // :05 fünf nach / kurz nach um
+      {  V_ITZE_ISSES, V_KURZ_NACH, 77, 78, OFF,OFF}, // :05 fünf nach / kurz nach um
       {  V_GLEI_HAMMERS, V_VIERTEL, OFF,OFF,OFF,OFF}, // :10 zehn nach / glei hammers viertel
       {  V_ITZE_ISSES, V_VIERTEL,   OFF, OFF,OFF,OFF,OFF,OFF }, // :15 viertel / itze isses viertel
       {  V_KURZ_NACH, V_VIERTEL, OFF,OFF,OFF,OFF,OFF,OFF,OFF }, // :20 zehn vor halb / kurz nach viertel
