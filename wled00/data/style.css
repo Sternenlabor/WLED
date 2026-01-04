@@ -16,6 +16,9 @@ hr {
 hr.sml {
   width: 260px;
 }
+h4 {
+  margin: 0;
+}
 a, a:hover {
   color: #28f;
   text-decoration: none;
@@ -33,6 +36,7 @@ button, .btn {
   min-width: 48px;
   cursor: pointer;
   text-decoration: none;
+  transition: all 0.3s ease;
 }
 button.sml {
   padding: 8px;
@@ -41,6 +45,11 @@ button.sml {
   min-width: 40px;
   margin: 0 0 0 10px;
 }
+button:hover, .btn:hover{
+  background:#555;
+  border-color:#555;
+}
+
 #scan {
   margin-top: -10px;
 }
@@ -76,8 +85,12 @@ input {
 input:disabled {
   color: #888;
 }
+input:invalid {
+  color: #f00;
+}
 input[type="text"],
 input[type="number"],
+input[type="password"],
 select {
     font-size: medium;
     margin: 2px;

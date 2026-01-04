@@ -1,6 +1,6 @@
 # Word Clock Usermod V2
 
-This usermod can be used to drive a wordclock with a 11x10 pixel matrix with WLED. There are also 4 additional dots for the minutes. 
+This usermod can be used to drive a wordclock with a 11x11 pixel matrix with WLED. There are also 4 additional dots for the minutes. 
 The visualisation is desribed in 4 mask with LED numbers (single dots for minutes, minutes, hours and "clock/Uhr").
 There are 2 parameters to chnage the behaviour:
  
@@ -19,13 +19,22 @@ I added a switch in usermod called "meander wiring?" to enable/disable alternati
 
 ## Installation
 
-Copy and update the example `platformio_override.ini.sample` 
-from the Rotary Encoder UI usermode folder to the root directory of your particular build.
-This file should be placed in the same directory as `platformio.ini`.
+Einfach mal so bauen. Aktuell gibt es ein env:usermod, da werden alle 
+usermods mitgenommen. Dieses ist dann auch dabei.
+Alternativ (um nur dieses zu haben)
+Kopiere diese `platformio_override.ini`
+von diesem Usermod in den root-Folder des Builds.
+Diese Datei sollte im selben Vz sein wie `platformio.ini`.
+Dadurch wird der default auf `d1_wordclock24` und diese Config
+wird gebaut. 
+
+Hier wird allerdings auf den ESP32 abgezielt. Im konkreten Fall auf espc3. 
+Entsprechend diese Zeile in der `platformio_override.ini` anpassen.
+
 
 ### Define Your Options
 
-* `USERMOD_WORDCLOCK_24`   - define this to have this the Auto Save usermod included wled00\usermods_list.cpp
+ none
 
 ### PlatformIO requirements
 
@@ -33,6 +42,8 @@ No special requirements.
 
 ## Change Log
 
-2022/08/18 added meander wiring pattern.
+2025-12-24 Port auf neues Usermod system
 
-2022/03/30 initial commit
+2022-08-18 added meander wiring pattern.
+
+2022-03-30 initial commit
