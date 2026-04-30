@@ -246,6 +246,10 @@
 #include "../usermods/usermod_v2_word_clock24/usermod_v2_word_clock24.h"
 #endif
 
+#ifdef USERMOD_ID_RTC_DCF77
+#include "../usermods/rtc_dcf77/rtc_dcf77.h"
+#endif
+
 
 void registerUsermods()
 {
@@ -478,6 +482,10 @@ void registerUsermods()
 
   #ifdef USERMOD_ID_WORDCLOCK24
   UsermodManager::add(new WordClock24Usermod());
+  #endif
+
+  #ifdef USERMOD_ID_RTC_DCF77
+  UsermodManager::add(new RtcDcf77());
   #endif
 
 }

@@ -204,6 +204,7 @@
 #define USERMOD_ID_POV_DISPLAY           53     //Usermod "usermod_pov_display.h"
 #define USERMOD_ID_PIXELS_DICE_TRAY      54     //Usermod "pixels_dice_tray.h"
 #define USERMOD_ID_WORDCLOCK24           55     //Usermod "usermod_v2_word_clock24.h"
+#define USERMOD_ID_RTC_DCF77             56     //Usermod "usermod_rtc_dcf77"
 
 //Access point behavior
 #define AP_BEHAVIOR_BOOT_NO_CONN          0     //Open AP when no connection after boot
